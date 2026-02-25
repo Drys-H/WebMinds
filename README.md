@@ -26,13 +26,13 @@ WebMinds is a web application for sharing, rating, and categorising recipes. Use
 
 ## Getting Started
 1. Clone the repo localy:
-    git clone https://github.com/Drys-H/WebMinds.git
+    - git clone https://github.com/Drys-H/WebMinds.git
 2. Create branch:
-    git checkout -b feature/your-feature-name
+    - git checkout -b feature/your-feature-name
 3. Commit & push :
-    git add .
-    git commit -m "Short descriptive message"
-    git push origin feature/your-feature-name
+    - git add .
+    - git commit -m "Short descriptive message"
+    - git push origin feature/your-feature-name
 
 ## Branching Strategy
 - main → stable code, always deployable
@@ -43,11 +43,11 @@ WebMinds is a web application for sharing, rating, and categorising recipes. Use
 
 ## Sprint Board
 All tasks will be tracked on Trello:
-  Backlog
-  To Do
-  Working On
-  Testing
-  Done
+  - Backlog
+  - To Do
+  - Working On
+  - Testing
+  - Done
 Link to Trello: Trello Board
 
 ## Contribution Guidelines
