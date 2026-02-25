@@ -49,7 +49,7 @@ All tasks will be tracked on Trello:
   - Testing
   - Done
     
-Link to Trello: Trello Board
+Link to Trello: [Trello Board](https://trello.com/b/36t5V6gn/webminds)
 
 ## Contribution Guidelines
 
