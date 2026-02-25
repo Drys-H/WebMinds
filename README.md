@@ -17,12 +17,12 @@ WebMinds is a web application for sharing, rating, and categorising recipes. Use
 - Provide a combined shopping list feature
 - Ensure the app is responsive and user-friendly
 
-## Team
+## Team 
 
-- RUDAINAH (Front-end/Trello)
-- ZAYNAB (Front-end/UX)
-- ROSS (Backend/DB)
-- DRYS (Backend/Lead)
+- 4314797(Front-end/Trello)
+- 3810826 (Front-end/UX)
+- 4321793(Backend/DB)
+- 4325364(Backend/Lead)
 
 ## Getting Started
 1. Clone the repo localy:
