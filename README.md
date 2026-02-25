@@ -48,6 +48,7 @@ All tasks will be tracked on Trello:
   - Working On
   - Testing
   - Done
+    
 Link to Trello: Trello Board
 
 ## Contribution Guidelines
@@ -57,4 +58,3 @@ Link to Trello: Trello Board
 - Create pull requests to develop when feature is complete
 - Review teammates’ PRs before merging
 
-  HAVE FUN ! 
