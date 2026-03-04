@@ -27,34 +27,16 @@ WebMinds is a web application for sharing, rating, and categorising recipes. Use
 ## Getting Started
 1. Clone the repo localy:
     - git clone https://github.com/Drys-H/WebMinds.git
+2. Navigate to repo :
+    - cd WebMinds
 2. Create branch:
-    - git checkout -b feature/your-feature-name
-3. Commit & push :
+    - git checkout main
+    - git pull origin main
+    - git checkout -b feature-name
+4. Commit & push :
     - git add .
     - git commit -m "Short descriptive message"
-    - git push origin feature/your-feature-name
-
-## Branching Strategy
-- main → stable code, always deployable
-- develop → integration of all features before merging to main
-- feature/ → separate branches for each feature (e.g., feature/recipes-crud)
-
-# Git Workflow
-
-## Setup
-git clone <repo-url>
-cd <repo-folder>
-
-## Start Working
-git checkout main
-git pull origin main
-git checkout -b feature-name
-
-## Work
-git status
-git add .
-git commit -m "Describe your change"
-git push -u origin feature-name
+    - git push -u origin feature-name
 
 ## Pull Request
 1. Go to GitHub
@@ -66,6 +48,11 @@ git push -u origin feature-name
 git checkout main
 git pull origin main
 git branch -d feature-name
+
+## Branching Strategy
+- main → stable code, always deployable
+- develop → integration of all features before merging to main
+- feature/ → separate branches for each feature (e.g., feature/recipes-crud)
 
 ## Rules
 - Never work directly on main
