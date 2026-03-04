@@ -39,7 +39,39 @@ WebMinds is a web application for sharing, rating, and categorising recipes. Use
 - develop → integration of all features before merging to main
 - feature/ → separate branches for each feature (e.g., feature/recipes-crud)
 
-**Workflow Tip**: Always pull develop before starting a new feature branch to avoid conflicts.
+# Git Workflow
+
+## Setup
+git clone <repo-url>
+cd <repo-folder>
+
+## Start Working
+git checkout main
+git pull origin main
+git checkout -b feature-name
+
+## Work
+git status
+git add .
+git commit -m "Describe your change"
+git push -u origin feature-name
+
+## Pull Request
+1. Go to GitHub
+2. Compare & Pull Request
+3. Base → main
+4. Review & Merge
+
+## After Merge
+git checkout main
+git pull origin main
+git branch -d feature-name
+
+## Rules
+- Never work directly on main
+- Always create a feature branch
+- Always pull before starting work
+- Use pull requests for merging
 
 ## Sprint Board
 All tasks will be tracked on Trello:
