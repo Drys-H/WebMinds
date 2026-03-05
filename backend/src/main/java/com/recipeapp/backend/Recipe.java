@@ -38,10 +38,10 @@ public class Recipe {
             joinColumns = @JoinColumn(name = "recipe_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
-    //private List<Ingredient> ingredients = new ArrayList<>();
+    private List<Ingredient> ingredients = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
-//    private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -115,20 +115,20 @@ public class Recipe {
         this.author = author;
     }
 
-//    public List<Ingredient> getIngredients() {
-//        return ingredients;
-//    }
-//
-//    public void setIngredients(List<Ingredient> ingredients) {
-//        this.ingredients = ingredients;
-//    }
-//
-//    public List<Comment> getComments() {
-//        return comments;
-//    }
-//
-//    public void setComments(List<Comment> comments) {
-//        this.comments = comments;
-//    }
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
 }
