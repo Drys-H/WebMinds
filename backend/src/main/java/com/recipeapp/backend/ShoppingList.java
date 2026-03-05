@@ -24,7 +24,7 @@ public class ShoppingList {
             inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
 
-    //private List<Ingredient> ingredients = new ArrayList<>();
+    private List<Ingredient> ingredients = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -50,12 +50,12 @@ public class ShoppingList {
         this.user = user;
     }
 
-//    public List<Ingredient> getIngredients() {
-//        return ingredients;
-//    }
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
 
-//    public void setIngredients(List<Ingredient> ingredients) {
-//        this.ingredients = ingredients;
-//    }
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
 
 }
