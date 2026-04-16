@@ -2,6 +2,7 @@ package com.recipeapp.backend.controllers;
 
 import com.recipeapp.backend.dto.CommentDTO;
 import com.recipeapp.backend.dto.RecipeDTO;
+import com.recipeapp.backend.service.CommentService;
 import com.recipeapp.backend.service.RecipeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,12 @@ import java.util.List;
 public class RecipeController {
 
     private final RecipeService recipeService;
+    private final CommentService commentService;
 
-    public RecipeController(RecipeService recipeService) {
+    public RecipeController(RecipeService recipeService,
+                            CommentService commentService) {
         this.recipeService = recipeService;
+        this.commentService = commentService;
     }
 
     @GetMapping
@@ -47,7 +51,7 @@ public class RecipeController {
 
     @GetMapping("/{id}/comments")
     public ResponseEntity<List<CommentDTO>> getCommentsForRecipe(@PathVariable Long id) {
-        // TODO: Connect to Service
-        return ResponseEntity.ok(new ArrayList<>());
+
+        return ResponseEntity.ok(commentService.getCommentsForRecipe(id));
     }
 }
