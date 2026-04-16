@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
-    List<Ingredient> findByNameContaining(String name);
+    List<Ingredient> findByNameIgnoreCase(String name);
 
 }
