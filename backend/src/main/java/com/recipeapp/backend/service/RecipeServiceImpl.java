@@ -1,12 +1,15 @@
 package com.recipeapp.backend.service;
 
+import com.recipeapp.backend.Ingredient;
 import com.recipeapp.backend.Recipe;
 import com.recipeapp.backend.User;
 import com.recipeapp.backend.dto.RecipeDTO;
+import com.recipeapp.backend.repository.IngredientRepository;
 import com.recipeapp.backend.repository.RecipeRepository;
 import com.recipeapp.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,10 +18,12 @@ public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
+    private final IngredientRepository ingredientRepository;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository, UserRepository userRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, UserRepository userRepository,  IngredientRepository ingredientRepository) {
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
+        this.ingredientRepository = ingredientRepository;
     }
 
     public List<RecipeDTO> getAllRecipes() {
@@ -40,7 +45,9 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public List<RecipeDTO> searchRecipes(String keyword) {
         List<Recipe> recipes = recipeRepository.findByTitleContainingIgnoreCaseOrDietaryTagContainingIgnoreCase(keyword, keyword);
-        return recipes.stream().map(recipe -> this.mapToDTO(recipe)).collect(Collectors.toList());
+        return recipes.stream()
+                .map(recipe -> this.mapToDTO(recipe))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -63,6 +70,24 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setDietaryTag(recipeDTO.getDietaryTag());
         recipe.setAuthor(author);
 
+        List<Ingredient> recipeIngredients = new ArrayList<>();
+
+        if (recipeDTO.getIngredients() != null) {
+
+            for (String ingredient : recipeDTO.getIngredients()) {
+                List<Ingredient> existingIngredients =
+                        ingredientRepository.findByNameIgnoreCase(ingredient);
+                if (existingIngredients.isEmpty()) {
+                    Ingredient newIngredient = new Ingredient();
+                    newIngredient.setName(ingredient);
+                    recipeIngredients.add(newIngredient);
+                } else {
+                    recipeIngredients.add(existingIngredients.get(0));
+                }
+            }
+        }
+        recipe.setIngredients(recipeIngredients);
+
         Recipe savedRecipe = recipeRepository.save(recipe);
         return mapToDTO(savedRecipe);
 
@@ -80,6 +105,13 @@ public class RecipeServiceImpl implements RecipeService {
         dto.setCuisineType(recipe.getCuisineType());
         dto.setDietaryTag(recipe.getDietaryTag());
         dto.setAuthorUsername(recipe.getAuthor().getUsername());
+
+        if (recipe.getIngredients() != null) {
+            List<String> ingredients = recipe.getIngredients().stream()
+                    .map(ingredient -> ingredient.getName())
+                    .collect(Collectors.toList());
+            dto.setIngredients(ingredients);
+        }
         return dto;
 
     }
