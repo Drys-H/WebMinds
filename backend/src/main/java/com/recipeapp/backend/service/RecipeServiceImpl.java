@@ -4,6 +4,7 @@ import com.recipeapp.backend.Recipe;
 import com.recipeapp.backend.User;
 import com.recipeapp.backend.dto.RecipeDTO;
 import com.recipeapp.backend.repository.RecipeRepository;
+import com.recipeapp.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,8 +46,13 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeDTO createRecipe(RecipeDTO recipeDTO) {
 
-        User author = userRepository.findByUsername(recipeDTO.getAuthorUsername())
-                .orElseThrow(() -> new RuntimeException("User not found: " + recipeDTO.getAuthorUsername()));
+        List<User> foundUsers = userRepository.findByUsername(recipeDTO.getAuthorUsername());
+        if (foundUsers.isEmpty()) {
+            throw new RuntimeException("USER NOT FOUND: " + recipeDTO.getAuthorUsername());
+        }
+
+        User author = foundUsers.get(0);
+
         Recipe recipe = new Recipe();
         recipe.setTitle(recipeDTO.getTitle());
         recipe.setPreparationSteps(recipeDTO.getPreparationSteps());
