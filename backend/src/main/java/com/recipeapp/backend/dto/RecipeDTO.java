@@ -1,5 +1,7 @@
 package com.recipeapp.backend.dto;
 
+import java.util.List;
+
 public class RecipeDTO {
 
     private Long id;
@@ -11,6 +13,8 @@ public class RecipeDTO {
     private String cuisineType;
     private String dietaryTag;
     private String authorUsername;
+
+    private List<String> ingredients;
 
     public Long getId() {
         return id;
@@ -82,5 +86,13 @@ public class RecipeDTO {
 
     public void setAuthorUsername(String authorUsername) {
         this.authorUsername = authorUsername;
+    }
+
+    public List<String> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<String> ingredients) {
+        this.ingredients = ingredients;
     }
 }
