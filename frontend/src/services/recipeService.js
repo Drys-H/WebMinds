@@ -18,7 +18,7 @@ export async function getRecipeById(id) {
 
 export async function searchRecipes(keyword) {
   const response = await fetch(
-    `${API_BASE_URL}/recipes/search?keyword=${encodeURIComponent(keyword)}`
+      `${API_BASE_URL}/recipes/search?keyword=${encodeURIComponent(keyword)}`
   );
   if (!response.ok) {
     throw new Error("Failed to search recipes");
