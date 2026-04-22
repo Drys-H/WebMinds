@@ -1,9 +1,10 @@
 package com.recipeapp.backend.controllers;
 
+import com.recipeapp.backend.dto.AuthResponseDTO;
+import com.recipeapp.backend.dto.LoginRequestDTO;
 import com.recipeapp.backend.dto.RegistrationFormDTO;
 import com.recipeapp.backend.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,13 @@ public class UserController {
 
         userService.registerUser(registrationDto);
         return ResponseEntity.ok("User registered successfully");
+
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest){
+
+        return ResponseEntity.ok(userService.loginUser(loginRequest));
 
     }
 }

@@ -19,10 +19,11 @@ WebMinds is a web application for sharing, rating, and categorising recipes. Use
 
 ## Team 
 
-- 4314797(Front-end/Trello)
-- 3810826 (Front-end/UX)
-- 4321793(Backend/DB)
-- 4325364(Backend/Lead)
+- 3810826 (Legal/Ethical/Economic Lead supports frontend and compliance)
+- 4314797 (Frontend/Trello Lead manages UI and task tracking)
+- 4321793 (Backend Security Lead, database and core features)
+- 4325364 (Scrum Master/Manager coordinates, tester and supports backend)
+
 
 ## Getting Started
 1. Clone the repo localy:
