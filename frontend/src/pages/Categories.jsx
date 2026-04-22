@@ -75,6 +75,7 @@ export default function Categories() {
         setError("");
       } catch (error) {
         setRecipes([]);
+        setError("Categories are unavailable right now.");
       }
     }
 
@@ -83,8 +84,8 @@ export default function Categories() {
 
   const cuisineCategories = useMemo(() => {
     const backendValues = recipes
-      .map((recipe) => recipe?.cuisineType)
-      .filter(Boolean);
+        .map((recipe) => recipe?.cuisineType)
+        .filter(Boolean);
 
     const merged = [...new Set([...backendValues, ...defaultCuisine])];
     return merged.slice(0, 9);
@@ -92,116 +93,118 @@ export default function Categories() {
 
   const dietaryCategories = useMemo(() => {
     const backendValues = recipes
-      .map((recipe) => recipe?.dietaryTag)
-      .filter(Boolean);
+        .map((recipe) => recipe?.dietaryTag)
+        .filter(Boolean);
 
     const merged = [...new Set([...backendValues, ...defaultDietary])];
     return merged.slice(0, 9);
   }, [recipes]);
 
   return (
-    <div className="bg-[#f7f8f5]">
-      <section className="bg-[var(--color-primary)]">
-        <div className="mx-auto max-w-7xl px-4 py-14">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white md:text-6xl">
-            Recipe Categories
-          </h1>
-          <p className="mt-5 max-w-3xl text-xl text-white/85">
-            Browse recipes by your favorite categories and discover new dishes
-          </p>
-        </div>
-      </section>
-
-      {error && (
-        <div className="border-b border-amber-200 bg-amber-50">
-          <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-amber-700">
-            {error}
-          </div>
-        </div>
-      )}
-
-      <section className="mx-auto max-w-7xl px-4 py-12">
-        <CategorySection
-          icon={
-            <div className="rounded-2xl bg-green-100 p-3 text-[var(--color-primary)]">
-              <Leaf className="h-6 w-6" />
-            </div>
-          }
-          title="By Dietary Preference"
-          items={dietaryCategories}
-        />
-
-        <CategorySection
-          icon={
-            <div className="rounded-2xl bg-blue-100 p-3 text-blue-600">
-              <Globe className="h-6 w-6" />
-            </div>
-          }
-          title="By Cuisine"
-          items={cuisineCategories}
-        />
-
-        <CategorySection
-          icon={
-            <div className="rounded-2xl bg-violet-100 p-3 text-violet-600">
-              <Utensils className="h-6 w-6" />
-            </div>
-          }
-          title="By Meal Type"
-          items={defaultMealTypes}
-        />
-
-        <CategorySection
-          icon={
-            <div className="rounded-2xl bg-orange-100 p-3 text-orange-600">
-              <Clock3 className="h-6 w-6" />
-            </div>
-          }
-          title="By Cooking Time"
-          items={defaultCookingTimes}
-        />
-
-        <section className="mt-12 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h2 className="text-3xl font-extrabold text-slate-950">Popular Tags</h2>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            {popularTags.map((tag) => (
-              <Link
-                key={tag}
-                to="/recipes"
-                className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
-              >
-                {tag}
-              </Link>
-            ))}
+      <div className="bg-[var(--color-background)] text-[var(--color-text)]">
+        <section className="bg-[var(--color-hero-bg)]">
+          <div className="mx-auto max-w-7xl px-4 py-14">
+            <h1 className="text-5xl font-extrabold tracking-tight text-[var(--color-hero-text)] md:text-6xl">
+              Recipe Categories
+            </h1>
+            <p className="mt-5 max-w-3xl text-xl text-[var(--color-hero-subtext)]">
+              Browse recipes by your favorite categories and discover new dishes
+            </p>
           </div>
         </section>
-      </section>
-    </div>
+
+        {error && (
+            <div className="border-b border-amber-200 bg-amber-50">
+              <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-amber-700">
+                {error}
+              </div>
+            </div>
+        )}
+
+        <section className="mx-auto max-w-7xl px-4 py-12">
+          <CategorySection
+              icon={
+                <div className="rounded-2xl bg-green-100 p-3 text-[var(--color-primary)]">
+                  <Leaf className="h-6 w-6" />
+                </div>
+              }
+              title="By Dietary Preference"
+              items={dietaryCategories}
+          />
+
+          <CategorySection
+              icon={
+                <div className="rounded-2xl bg-blue-100 p-3 text-blue-600">
+                  <Globe className="h-6 w-6" />
+                </div>
+              }
+              title="By Cuisine"
+              items={cuisineCategories}
+          />
+
+          <CategorySection
+              icon={
+                <div className="rounded-2xl bg-violet-100 p-3 text-violet-600">
+                  <Utensils className="h-6 w-6" />
+                </div>
+              }
+              title="By Meal Type"
+              items={defaultMealTypes}
+          />
+
+          <CategorySection
+              icon={
+                <div className="rounded-2xl bg-orange-100 p-3 text-orange-600">
+                  <Clock3 className="h-6 w-6" />
+                </div>
+              }
+              title="By Cooking Time"
+              items={defaultCookingTimes}
+          />
+
+          <section className="mt-12 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-sm">
+            <h2 className="text-3xl font-extrabold text-[var(--color-text)]">
+              Popular Tags
+            </h2>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              {popularTags.map((tag) => (
+                  <Link
+                      key={tag}
+                      to="/recipes"
+                      className="rounded-full bg-[var(--color-background)] px-4 py-2 text-sm font-medium text-[var(--color-text-muted)] transition hover:bg-[var(--color-border)] hover:text-[var(--color-primary)]"
+                  >
+                    {tag}
+                  </Link>
+              ))}
+            </div>
+          </section>
+        </section>
+      </div>
   );
 }
 
 function CategorySection({ icon, title, items }) {
   return (
-    <section className="mb-14">
-      <div className="mb-8 flex items-center gap-4">
-        {icon}
-        <h2 className="text-4xl font-extrabold tracking-tight text-slate-950">
-          {title}
-        </h2>
-      </div>
+      <section className="mb-14">
+        <div className="mb-8 flex items-center gap-4">
+          {icon}
+          <h2 className="text-4xl font-extrabold tracking-tight text-[var(--color-text)]">
+            {title}
+          </h2>
+        </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-        {items.map((item) => (
-          <Link
-            key={item}
-            to="/recipes"
-            className="flex min-h-[72px] items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center text-lg font-semibold text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-          >
-            {item}
-          </Link>
-        ))}
-      </div>
-    </section>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+          {items.map((item) => (
+              <Link
+                  key={item}
+                  to="/recipes"
+                  className="flex min-h-[72px] items-center justify-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 text-center text-lg font-semibold text-[var(--color-text)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+              >
+                {item}
+              </Link>
+          ))}
+        </div>
+      </section>
   );
 }

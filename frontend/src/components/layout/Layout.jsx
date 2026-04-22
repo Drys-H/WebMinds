@@ -51,8 +51,8 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] text-slate-900 dark:bg-slate-950 dark:text-white">
-      <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
+      <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] dark:bg-slate-950 dark:text-white">
+       <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <Link to="/" className="text-2xl font-extrabold tracking-tight">
             <span className="text-[var(--color-primary)]">FRESH</span>
@@ -172,7 +172,7 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <footer className="mt-16 border-t border-gray-200 bg-gray-50 dark:border-slate-800 dark:bg-slate-900">
+      <footer className="mt-16 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             <div>

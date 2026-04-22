@@ -38,10 +38,12 @@ img {
   min-height: 100vh;
 }
 
+/* Layout spacing helper */
 .section-space {
   padding-block: 4rem;
 }
 
+/* Card hover effect */
 .card-hover {
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
@@ -51,6 +53,25 @@ img {
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
   border-color: rgba(107, 142, 111, 0.32);
 }
+
+/* Theme utility helpers */
+
+.page-shell {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.surface-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+/* Text truncation */
 
 .line-clamp-2 {
   display: -webkit-box;
