@@ -11,5 +11,6 @@ public interface RecipeService {
     RecipeDTO getRecipeById(Long id);
     RecipeDTO createRecipe(RecipeDTO recipeDTO);
     List<RecipeDTO> searchRecipes(String keyword);
+    void deleteRecipe(Long recipeId);
 
 }

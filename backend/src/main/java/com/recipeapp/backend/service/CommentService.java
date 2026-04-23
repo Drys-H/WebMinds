@@ -9,5 +9,6 @@ public interface CommentService {
 
     List<CommentDTO> getCommentsForRecipe(Long recipeId);
     CommentDTO addComment(Long recipeId, CommentRequestDTO commentDTO);
+    void deleteComment(Long commentId);
 
 }

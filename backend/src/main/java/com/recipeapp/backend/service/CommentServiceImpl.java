@@ -70,4 +70,11 @@ public class CommentServiceImpl implements CommentService {
         responseDTO.setAuthorUsername(savedComment.getUser().getUsername());
         return responseDTO;
     }
+
+    public void deleteComment(Long commentId){
+        if (!commentRepository.existsById(commentId)) {
+            throw new RuntimeException("Comment Not Found" + commentId);
+        }
+        commentRepository.deleteById(commentId);
+    }
 }
