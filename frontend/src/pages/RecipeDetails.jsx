@@ -341,3 +341,4 @@ function StatBox({ icon, value, label }) {
       </div>
   );
 }
+
