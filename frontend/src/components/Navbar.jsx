@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { getUser, logout } from "../utils/auth";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const user = getUser();
 
   return (
     <div style={navbar}>
-      <h2>
+      <h2 onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
         <span style={{ color: "#6f8f6b" }}>Fit</span>
         <span style={{ color: "#f4a261" }}>&</span>
         <span style={{ color: "#6f8f6b" }}>Fresh</span>
@@ -16,14 +18,39 @@ export default function Navbar() {
         <span onClick={() => navigate("/recipes")}>Recipes</span>
         <span onClick={() => navigate("/categories")}>Categories</span>
         <span onClick={() => navigate("/community")}>Community</span>
+        <span onClick={() => navigate("/create")}>Create</span>
+      </div>
+
+      <div style={authSection}>
+        {user ? (
+          <>
+            <span onClick={() => navigate("/profile")}>Profile</span>
+            <span
+              onClick={() => {
+                logout();
+                navigate("/signin");
+              }}
+            >
+              Logout
+            </span>
+          </>
+        ) : (
+          <>
+            <span onClick={() => navigate("/signin")}>Sign In</span>
+            <span onClick={() => navigate("/register")}>Register</span>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
+/* STYLES */
+
 const navbar = {
   display: "flex",
   justifyContent: "space-between",
+  alignItems: "center",
   padding: "20px",
   background: "white",
   borderBottom: "1px solid #eee"
@@ -33,4 +60,11 @@ const links = {
   display: "flex",
   gap: "20px",
   cursor: "pointer"
+};
+
+const authSection = {
+  display: "flex",
+  gap: "15px",
+  cursor: "pointer",
+  fontWeight: "500"
 };

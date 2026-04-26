@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { loginUser } from "../services/api";
-import { setUser } from "../utils/auth";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -43,7 +42,8 @@ export default function SignIn() {
 
       const data = await loginUser(form);
 
-      setUser(data);
+      // OPTIONAL: store user locally (simple version)
+      localStorage.setItem("user", JSON.stringify(data));
 
       navigate("/profile");
 
@@ -66,12 +66,9 @@ export default function SignIn() {
       </div>
 
       <div style={container}>
-
         <div style={card}>
 
-          <h2 style={title}>
-            Welcome Back
-          </h2>
+          <h2 style={title}>Welcome Back</h2>
 
           <p style={subtitle}>
             Sign in to your Fit & Fresh account
@@ -104,7 +101,7 @@ export default function SignIn() {
 
           <p style={bottomText}>
             Don't have an account?{" "}
-            <span onClick={() => navigate("/signup")} style={link}>
+            <span onClick={() => navigate("/register")} style={link}>
               Create one
             </span>
           </p>
