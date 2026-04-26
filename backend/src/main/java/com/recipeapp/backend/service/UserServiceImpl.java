@@ -1,10 +1,13 @@
 package com.recipeapp.backend.service;
 
+import com.recipeapp.backend.Recipe;
 import com.recipeapp.backend.Role;
 import com.recipeapp.backend.User;
 import com.recipeapp.backend.dto.AuthResponseDTO;
 import com.recipeapp.backend.dto.LoginRequestDTO;
+import com.recipeapp.backend.dto.RecipeDTO;
 import com.recipeapp.backend.dto.RegistrationFormDTO;
+import com.recipeapp.backend.repository.RecipeRepository;
 import com.recipeapp.backend.repository.UserRepository;
 import com.recipeapp.backend.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,15 +28,17 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RecipeRepository recipeRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            AuthenticationManager authenticationManager,
-                           JwtService jwtService) {
+                           JwtService jwtService, RecipeRepository recipeRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.recipeRepository = recipeRepository;
     }
 
     @Override
@@ -72,4 +78,76 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void saveRecipeToProfile(String username, Long recipeId) {
+
+        List<User> users = userRepository.findByUsername(username);
+        if (users.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User user = users.get(0); // Grab the first (and only) user
+
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found")); // This one is Optional, so it works!
+
+        if (!user.getSavedRecipes().contains(recipe)) {
+            user.getSavedRecipes().add(recipe);
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public void removeRecipeFromProfile(String username, Long recipeId) {
+
+        List<User> users = userRepository.findByUsername(username);
+        if (users.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User user = users.get(0);
+
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found"));
+
+        user.getSavedRecipes().remove(recipe);
+        userRepository.save(user);
+    }
+
+    @Override
+    public List<RecipeDTO> getSavedRecipes(String username) {
+
+        List<User> users = userRepository.findByUsername(username);
+        if (users.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User user = users.get(0);
+
+        return user.getSavedRecipes().stream()
+                .map(recipe -> convertToDto(recipe))
+                .collect(Collectors.toList());
+    }
+
+    private RecipeDTO convertToDto(Recipe recipe) {
+        RecipeDTO dto = new RecipeDTO();
+        dto.setId(recipe.getId());
+        dto.setTitle(recipe.getTitle());
+        dto.setPreparationSteps(recipe.getPreparationSteps());
+        dto.setCookingTimeMinutes(recipe.getCookingTimeMinutes());
+        dto.setServings(recipe.getServings());
+        dto.setImageUrl(recipe.getImageUrl());
+        dto.setCuisineType(recipe.getCuisineType());
+        dto.setDietaryTag(recipe.getDietaryTag());
+
+        if (recipe.getAuthor() != null) {
+            dto.setAuthorUsername(recipe.getAuthor().getUsername());
+        }
+
+        if (recipe.getIngredients() != null) {
+            List<String> ingredientStrings = recipe.getIngredients().stream()
+                    .map(ingredient -> ingredient.getName())
+                    .collect(Collectors.toList());
+            dto.setIngredients(ingredientStrings);
+        }
+
+        return dto;
+    }
 }
