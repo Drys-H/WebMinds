@@ -32,7 +32,7 @@ public class Recipe {
     private User author;
 
     // Many Recipes have Many Ingredients
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "recipe_ingredients",
             joinColumns = @JoinColumn(name = "recipe_id"),
