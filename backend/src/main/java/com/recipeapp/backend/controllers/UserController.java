@@ -2,11 +2,14 @@ package com.recipeapp.backend.controllers;
 
 import com.recipeapp.backend.dto.AuthResponseDTO;
 import com.recipeapp.backend.dto.LoginRequestDTO;
+import com.recipeapp.backend.dto.RecipeDTO;
 import com.recipeapp.backend.dto.RegistrationFormDTO;
 import com.recipeapp.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -32,5 +35,23 @@ public class UserController {
 
         return ResponseEntity.ok(userService.loginUser(loginRequest));
 
+    }
+
+    @PostMapping("/{username}/saved-recipes/{recipeId}")
+    public ResponseEntity<String> saveRecipe(@PathVariable String username, @PathVariable Long recipeId) {
+        userService.saveRecipeToProfile(username, recipeId);
+        return ResponseEntity.ok("Recipe saved successfully!");
+    }
+
+    @DeleteMapping("/{username}/saved-recipes/{recipeId}")
+    public ResponseEntity<String> removeSavedRecipe(@PathVariable String username, @PathVariable Long recipeId) {
+        userService.removeRecipeFromProfile(username, recipeId);
+        return ResponseEntity.ok("Recipe removed from saved list.");
+    }
+
+    @GetMapping("/{username}/saved-recipes")
+    public ResponseEntity<List<RecipeDTO>> getSavedRecipes(@PathVariable String username) {
+        List<RecipeDTO> savedRecipes = userService.getSavedRecipes(username);
+        return ResponseEntity.ok(savedRecipes);
     }
 }

@@ -115,4 +115,13 @@ public class RecipeServiceImpl implements RecipeService {
         return dto;
 
     }
+
+    @Override
+    public void deleteRecipe(Long recipeId) {
+
+        if (!recipeRepository.existsById(recipeId)) {
+            throw new RuntimeException("Recipe not found with ID: " + recipeId);
+        }
+        recipeRepository.deleteById(recipeId);
+    }
 }
