@@ -9,27 +9,36 @@ import {
   Heart,
   ShoppingCart,
 } from "lucide-react";
-import { getRecipeById } from "../services/recipeService";
+import {
+  getRecipeById,
+  getCommentsForRecipe,
+  addComment,
+} from "../services/recipeService";
 
 export default function RecipeDetails() {
   const { id } = useParams();
+
   const [recipe, setRecipe] = useState(null);
+  const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [localComments, setLocalComments] = useState([]);
 
   useEffect(() => {
     async function loadRecipe() {
       try {
         const data = await getRecipeById(id);
+        const commentsData = await getCommentsForRecipe(id);
+
         setRecipe(data);
+        setComments(Array.isArray(commentsData) ? commentsData : []);
         setError("");
       } catch (err) {
         setError("Recipe details are unavailable right now.");
         setRecipe(null);
+        setComments([]);
       } finally {
         setLoading(false);
       }
@@ -60,6 +69,17 @@ export default function RecipeDetails() {
         .filter(Boolean);
   }, [recipe]);
 
+  const averageRating = useMemo(() => {
+    if (!comments.length) return "4.8";
+
+    const total = comments.reduce(
+        (sum, item) => sum + Number(item.rating || 0),
+        0
+    );
+
+    return (total / comments.length).toFixed(1);
+  }, [comments]);
+
   const handleShare = async () => {
     const url = window.location.href;
 
@@ -78,7 +98,7 @@ export default function RecipeDetails() {
     }
   };
 
-  const handleSubmitReview = (e) => {
+  const handleSubmitReview = async (e) => {
     e.preventDefault();
 
     if (!rating || !comment.trim()) {
@@ -86,16 +106,19 @@ export default function RecipeDetails() {
       return;
     }
 
-    const newComment = {
-      id: Date.now(),
-      rating,
-      comment,
-      author: "Guest user",
-    };
+    try {
+      const newComment = await addComment(id, {
+        text: comment,
+        rating,
+        authorUsername: "Guest",
+      });
 
-    setLocalComments((prev) => [newComment, ...prev]);
-    setRating(0);
-    setComment("");
+      setComments((prev) => [newComment, ...prev]);
+      setRating(0);
+      setComment("");
+    } catch (error) {
+      alert("Could not submit review.");
+    }
   };
 
   const title = recipe?.title || "Recipe title";
@@ -198,22 +221,30 @@ export default function RecipeDetails() {
               <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm sm:p-6">
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                   <StatBox
-                      icon={<Clock3 className="h-5 w-5 text-[var(--color-primary)]" />}
+                      icon={
+                        <Clock3 className="h-5 w-5 text-[var(--color-primary)]" />
+                      }
                       value={`${cookingTimeMinutes}`}
                       label="minutes"
                   />
                   <StatBox
-                      icon={<Star className="h-5 w-5 text-[var(--color-accent)]" />}
-                      value="4.8"
+                      icon={
+                        <Star className="h-5 w-5 text-[var(--color-accent)]" />
+                      }
+                      value={averageRating}
                       label="rating"
                   />
                   <StatBox
-                      icon={<Users className="h-5 w-5 text-[var(--color-primary)]" />}
+                      icon={
+                        <Users className="h-5 w-5 text-[var(--color-primary)]" />
+                      }
                       value={`${servings}`}
                       label="servings"
                   />
                   <StatBox
-                      icon={<ShoppingCart className="h-5 w-5 text-[var(--color-primary)]" />}
+                      icon={
+                        <ShoppingCart className="h-5 w-5 text-[var(--color-primary)]" />
+                      }
                       value="Ready"
                       label="details"
                   />
@@ -247,7 +278,8 @@ export default function RecipeDetails() {
                       <li className="flex items-start gap-3">
                         <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--color-primary)]" />
                         <span>
-                      Ingredients will display here when the backend returns ingredient details.
+                      Ingredients will display here when the backend returns
+                      ingredient details.
                     </span>
                       </li>
                   )}
@@ -277,7 +309,8 @@ export default function RecipeDetails() {
                           1
                         </div>
                         <p className="pt-1 text-sm leading-7 text-[var(--color-text)] sm:text-base">
-                          Preparation steps will appear here when the backend returns them.
+                          Preparation steps will appear here when the backend
+                          returns them.
                         </p>
                       </div>
                   )}
@@ -326,22 +359,23 @@ export default function RecipeDetails() {
                 </form>
 
                 <div className="mt-8 space-y-4">
-                  {localComments.length > 0 ? (
-                      localComments.map((item) => (
+                  {comments.length > 0 ? (
+                      comments.map((item) => (
                           <div
                               key={item.id}
                               className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] p-4"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <p className="font-semibold text-[var(--color-text)]">
-                                {item.author}
+                                {item.authorUsername || "Guest"}
                               </p>
                               <p className="text-sm text-yellow-500">
-                                {"★".repeat(item.rating)}
+                                {"★".repeat(Number(item.rating || 0))}
                               </p>
                             </div>
+
                             <p className="mt-2 text-sm leading-6 text-[var(--color-text-muted)]">
-                              {item.comment}
+                              {item.text}
                             </p>
                           </div>
                       ))
@@ -382,15 +416,23 @@ export default function RecipeDetails() {
 
                 <div className="mt-5 space-y-4 text-[var(--color-text)]">
                   <div>
-                    <p className="text-sm text-[var(--color-text-muted)]">Cuisine</p>
+                    <p className="text-sm text-[var(--color-text-muted)]">
+                      Cuisine
+                    </p>
                     <p className="font-semibold">{cuisineType}</p>
                   </div>
+
                   <div>
-                    <p className="text-sm text-[var(--color-text-muted)]">Cook Time</p>
+                    <p className="text-sm text-[var(--color-text-muted)]">
+                      Cook Time
+                    </p>
                     <p className="font-semibold">{cookingTimeMinutes} min</p>
                   </div>
+
                   <div>
-                    <p className="text-sm text-[var(--color-text-muted)]">Servings</p>
+                    <p className="text-sm text-[var(--color-text-muted)]">
+                      Servings
+                    </p>
                     <p className="font-semibold">{servings}</p>
                   </div>
                 </div>
