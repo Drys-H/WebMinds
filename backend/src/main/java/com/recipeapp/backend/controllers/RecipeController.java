@@ -61,4 +61,20 @@ public class RecipeController {
 
         return ResponseEntity.ok(commentService.addComment(id, commentDTO));
     }
+
+    @PostMapping("/{recipeId}/ratings")
+    public ResponseEntity<String> addRating(
+            @PathVariable Long recipeId,
+            @RequestParam String username,
+            @RequestParam int score) {
+
+        recipeService.addRatingToRecipe(recipeId, username, score);
+        return ResponseEntity.ok("Rating saved successfully!");
+    }
+
+    @GetMapping("/{recipeId}/ratings/average")
+    public ResponseEntity<Double> getAverageRating(@PathVariable Long recipeId) {
+        double average = recipeService.getAverageRating(recipeId);
+        return ResponseEntity.ok(average);
+    }
 }
