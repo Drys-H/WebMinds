@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Clock3, Globe, Leaf, Utensils } from "lucide-react";
+import { Clock3, Globe, Leaf } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getAllRecipes } from "../services/recipeService";
 
@@ -25,15 +25,6 @@ const defaultCuisine = [
   "Thai",
   "Japanese",
   "French",
-];
-
-const defaultMealTypes = [
-  "Breakfast",
-  "Lunch",
-  "Dinner",
-  "Snacks",
-  "Desserts",
-  "Appetizers",
 ];
 
 const defaultCookingTimes = [
@@ -103,11 +94,12 @@ export default function Categories() {
   return (
       <div className="bg-[var(--color-background)] text-[var(--color-text)]">
         <section className="bg-[var(--color-hero-bg)]">
-          <div className="mx-auto max-w-7xl px-4 py-14">
-            <h1 className="text-5xl font-extrabold tracking-tight text-[var(--color-hero-text)] md:text-6xl">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+            <h1 className="text-4xl font-extrabold tracking-tight text-[var(--color-hero-text)] sm:text-5xl lg:text-6xl">
               Recipe Categories
             </h1>
-            <p className="mt-5 max-w-3xl text-xl text-[var(--color-hero-subtext)]">
+
+            <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--color-hero-subtext)] sm:mt-5 sm:text-xl">
               Browse recipes by your favorite categories and discover new dishes
             </p>
           </div>
@@ -115,17 +107,17 @@ export default function Categories() {
 
         {error && (
             <div className="border-b border-amber-200 bg-amber-50">
-              <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-amber-700">
+              <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-amber-700 sm:px-6 lg:px-8">
                 {error}
               </div>
             </div>
         )}
 
-        <section className="mx-auto max-w-7xl px-4 py-12">
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
           <CategorySection
               icon={
                 <div className="rounded-2xl bg-green-100 p-3 text-[var(--color-primary)]">
-                  <Leaf className="h-6 w-6" />
+                  <Leaf className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
               }
               title="By Dietary Preference"
@@ -135,7 +127,7 @@ export default function Categories() {
           <CategorySection
               icon={
                 <div className="rounded-2xl bg-blue-100 p-3 text-blue-600">
-                  <Globe className="h-6 w-6" />
+                  <Globe className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
               }
               title="By Cuisine"
@@ -144,35 +136,25 @@ export default function Categories() {
 
           <CategorySection
               icon={
-                <div className="rounded-2xl bg-violet-100 p-3 text-violet-600">
-                  <Utensils className="h-6 w-6" />
-                </div>
-              }
-              title="By Meal Type"
-              items={defaultMealTypes}
-          />
-
-          <CategorySection
-              icon={
                 <div className="rounded-2xl bg-orange-100 p-3 text-orange-600">
-                  <Clock3 className="h-6 w-6" />
+                  <Clock3 className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
               }
               title="By Cooking Time"
               items={defaultCookingTimes}
           />
 
-          <section className="mt-12 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-sm">
-            <h2 className="text-3xl font-extrabold text-[var(--color-text)]">
+          <section className="mt-10 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm sm:mt-12 sm:p-8">
+            <h2 className="text-2xl font-extrabold text-[var(--color-text)] sm:text-3xl">
               Popular Tags
             </h2>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-2 sm:mt-8 sm:gap-3">
               {popularTags.map((tag) => (
                   <Link
                       key={tag}
                       to="/recipes"
-                      className="rounded-full bg-[var(--color-background)] px-4 py-2 text-sm font-medium text-[var(--color-text-muted)] transition hover:bg-[var(--color-border)] hover:text-[var(--color-primary)]"
+                      className="rounded-full bg-[var(--color-background)] px-3 py-2 text-xs font-medium text-[var(--color-text-muted)] transition hover:bg-[var(--color-border)] hover:text-[var(--color-primary)] sm:px-4 sm:text-sm"
                   >
                     {tag}
                   </Link>
@@ -186,20 +168,21 @@ export default function Categories() {
 
 function CategorySection({ icon, title, items }) {
   return (
-      <section className="mb-14">
-        <div className="mb-8 flex items-center gap-4">
+      <section className="mb-10 sm:mb-14">
+        <div className="mb-5 flex items-center gap-3 sm:mb-8 sm:gap-4">
           {icon}
-          <h2 className="text-4xl font-extrabold tracking-tight text-[var(--color-text)]">
+
+          <h2 className="text-2xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-3xl lg:text-4xl">
             {title}
           </h2>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
           {items.map((item) => (
               <Link
                   key={item}
                   to="/recipes"
-                  className="flex min-h-[72px] items-center justify-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 text-center text-lg font-semibold text-[var(--color-text)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                  className="flex min-h-[64px] items-center justify-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-center text-base font-semibold text-[var(--color-text)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] sm:min-h-[72px] sm:px-5 sm:py-4 sm:text-lg"
               >
                 {item}
               </Link>

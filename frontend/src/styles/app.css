@@ -38,12 +38,12 @@ img {
   min-height: 100vh;
 }
 
-/* Layout spacing helper */
+
 .section-space {
   padding-block: 4rem;
 }
 
-/* Card hover effect */
+
 .card-hover {
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
@@ -54,7 +54,7 @@ img {
   border-color: rgba(107, 142, 111, 0.32);
 }
 
-/* Theme utility helpers */
+
 
 .page-shell {
   background: var(--color-background);
@@ -71,7 +71,7 @@ img {
   color: var(--color-text-muted);
 }
 
-/* Text truncation */
+
 
 .line-clamp-2 {
   display: -webkit-box;

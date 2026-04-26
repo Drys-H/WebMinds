@@ -13,6 +13,9 @@
   --color-hero-bg: #6b8e6f;
   --color-hero-text: #ffffff;
   --color-hero-subtext: rgba(255, 255, 255, 0.85);
+
+  --color-cta-bg: #6b8e6f;
+  --color-cta-card: rgba(255, 255, 255, 0.12);
 }
 
 .dark {
@@ -30,4 +33,7 @@
   --color-hero-bg: #1e293b;
   --color-hero-text: #f8fafc;
   --color-hero-subtext: #cbd5e1;
+
+  --color-cta-bg: #1e293b;
+  --color-cta-card: rgba(255, 255, 255, 0.08);
 }

@@ -28,6 +28,7 @@ export default function Community() {
   const creatorCards = useMemo(() => {
     const grouped = recipes.reduce((acc, recipe) => {
       const author = recipe?.authorUsername || "Unknown";
+
       if (!acc[author]) {
         acc[author] = {
           name: author,
@@ -70,36 +71,38 @@ export default function Community() {
   return (
       <div className="bg-[var(--color-background)] text-[var(--color-text)]">
         <section className="bg-[var(--color-hero-bg)]">
-          <div className="mx-auto max-w-7xl px-4 py-14">
-            <div className="flex items-center gap-3 text-[var(--color-hero-text)]">
-              <ChefHat className="h-8 w-8" />
-              <h1 className="text-5xl font-extrabold tracking-tight md:text-6xl">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+            <div className="flex flex-col gap-3 text-[var(--color-hero-text)] sm:flex-row sm:items-center">
+              <ChefHat className="h-7 w-7 sm:h-8 sm:w-8" />
+
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
                 Community
               </h1>
             </div>
 
-            <p className="mt-5 max-w-3xl text-xl text-[var(--color-hero-subtext)]">
-              Meet our talented recipe creators and discover their amazing culinary creations
+            <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--color-hero-subtext)] sm:mt-5 sm:text-xl">
+              Meet our talented recipe creators and discover their amazing culinary
+              creations
             </p>
           </div>
         </section>
 
         {error && (
             <div className="border-b border-amber-200 bg-amber-50">
-              <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-amber-700">
+              <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-amber-700 sm:px-6 lg:px-8">
                 {error}
               </div>
             </div>
         )}
 
-        <section className="mx-auto max-w-7xl px-4 py-12">
-          <div className="mb-8 flex flex-wrap gap-3">
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+          <div className="mb-8 flex flex-wrap gap-2 sm:gap-3">
             {communityTabs.map((tab) => (
                 <button
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`rounded-xl px-5 py-3 text-sm font-semibold transition ${
+                    className={`rounded-xl px-4 py-2 text-sm font-semibold transition sm:px-5 sm:py-3 ${
                         activeTab === tab
                             ? "bg-[var(--color-primary)] text-white"
                             : "border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-background)]"
@@ -110,7 +113,7 @@ export default function Community() {
             ))}
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {creatorCards.length > 0 ? (
                 creatorCards.map((creator, index) => (
                     <CreatorCard key={creator.name} creator={creator} index={index} />
@@ -124,22 +127,23 @@ export default function Community() {
             )}
           </div>
 
-          <section className="mt-12 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-sm">
-            <div className="mb-8 flex items-center gap-3">
-              <Trophy className="h-6 w-6 text-[var(--color-accent)]" />
-              <h2 className="text-4xl font-extrabold tracking-tight text-[var(--color-text)]">
+          <section className="mt-10 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm sm:mt-12 sm:p-8">
+            <div className="mb-6 flex items-center gap-3 sm:mb-8">
+              <Trophy className="h-5 w-5 text-[var(--color-accent)] sm:h-6 sm:w-6" />
+
+              <h2 className="text-2xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-3xl lg:text-4xl">
                 Top Community Recipes
               </h2>
             </div>
 
             {topRecipes.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {topRecipes.slice(0, 6).map((recipe) => (
                       <CommunityRecipeCard key={recipe.id} recipe={recipe} />
                   ))}
                 </div>
             ) : (
-                <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-background)] p-10 text-center text-[var(--color-text-muted)]">
+                <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-background)] p-8 text-center text-[var(--color-text-muted)] sm:p-10">
                   Community recipes will appear here once available.
                 </div>
             )}
@@ -159,19 +163,22 @@ function CreatorCard({ creator, index }) {
   const colorClass = avatarColors[index % avatarColors.length];
 
   return (
-      <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm">
+      <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm sm:p-6">
         <div className="flex items-start gap-4">
           <div
-              className={`flex h-16 w-16 items-center justify-center rounded-full text-2xl font-bold ${colorClass}`}
+              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-xl font-bold sm:h-16 sm:w-16 sm:text-2xl ${colorClass}`}
           >
             {creator.name.charAt(0).toUpperCase()}
           </div>
 
           <div className="min-w-0">
-            <h3 className="text-3xl font-extrabold leading-tight text-[var(--color-text)]">
+            <h3 className="break-words text-2xl font-extrabold leading-tight text-[var(--color-text)] sm:text-3xl">
               {creator.name}
             </h3>
-            <p className="mt-1 text-[var(--color-text-muted)]">{creator.username}</p>
+
+            <p className="mt-1 text-sm text-[var(--color-text-muted)] sm:text-base">
+              {creator.username}
+            </p>
 
             <div className="mt-2 flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -180,7 +187,7 @@ function CreatorCard({ creator, index }) {
           </div>
         </div>
 
-        <p className="mt-6 text-lg leading-8 text-[var(--color-text-muted)]">
+        <p className="mt-5 text-base leading-7 text-[var(--color-text-muted)] sm:mt-6 sm:text-lg sm:leading-8">
           Passionate about sharing recipes and inspiring healthier cooking choices.
         </p>
 
@@ -201,25 +208,40 @@ function CreatorCard({ creator, index }) {
           )}
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+        <div className="mt-6 grid grid-cols-3 gap-3 text-center sm:gap-4">
           <div>
-            <p className="text-2xl font-extrabold text-[var(--color-text)]">{creator.recipes}</p>
-            <p className="text-sm text-[var(--color-text-muted)]">Recipes</p>
+            <p className="text-xl font-extrabold text-[var(--color-text)] sm:text-2xl">
+              {creator.recipes}
+            </p>
+            <p className="text-xs text-[var(--color-text-muted)] sm:text-sm">
+              Recipes
+            </p>
           </div>
+
           <div>
-            <p className="text-2xl font-extrabold text-[var(--color-text)]">--</p>
-            <p className="text-sm text-[var(--color-text-muted)]">Followers</p>
+            <p className="text-xl font-extrabold text-[var(--color-text)] sm:text-2xl">
+              --
+            </p>
+            <p className="text-xs text-[var(--color-text-muted)] sm:text-sm">
+              Followers
+            </p>
           </div>
+
           <div>
-            <p className="text-2xl font-extrabold text-[var(--color-text)]">--</p>
-            <p className="text-sm text-[var(--color-text-muted)]">Following</p>
+            <p className="text-xl font-extrabold text-[var(--color-text)] sm:text-2xl">
+              --
+            </p>
+            <p className="text-xs text-[var(--color-text-muted)] sm:text-sm">
+              Following
+            </p>
           </div>
         </div>
 
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <button className="flex-1 rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm font-semibold text-[var(--color-text)]">
             View Profile
           </button>
+
           <button className="rounded-xl bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white">
             Follow
           </button>
@@ -230,9 +252,10 @@ function CreatorCard({ creator, index }) {
 
 function CreatorPlaceholder() {
   return (
-      <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm">
+      <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm sm:p-6">
         <div className="flex items-start gap-4">
-          <div className="h-16 w-16 rounded-full bg-[var(--color-border)]" />
+          <div className="h-14 w-14 rounded-full bg-[var(--color-border)] sm:h-16 sm:w-16" />
+
           <div className="flex-1">
             <div className="h-7 w-40 rounded bg-[var(--color-border)]" />
             <div className="mt-3 h-4 w-28 rounded bg-[var(--color-background)]" />
@@ -247,15 +270,15 @@ function CreatorPlaceholder() {
           <div className="h-8 w-24 rounded-full bg-[var(--color-background)]" />
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-4">
+        <div className="mt-6 grid grid-cols-3 gap-3 sm:gap-4">
           <div className="h-14 rounded bg-[var(--color-background)]" />
           <div className="h-14 rounded bg-[var(--color-background)]" />
           <div className="h-14 rounded bg-[var(--color-background)]" />
         </div>
 
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <div className="h-11 flex-1 rounded-xl bg-[var(--color-background)]" />
-          <div className="h-11 w-24 rounded-xl bg-[var(--color-background)]" />
+          <div className="h-11 w-full rounded-xl bg-[var(--color-background)] sm:w-24" />
         </div>
       </div>
   );
@@ -269,13 +292,13 @@ function CommunityRecipeCard({ recipe }) {
   const authorUsername = recipe?.authorUsername || "Unknown";
 
   return (
-      <Link to={recipeId ? `/recipes/${recipeId}` : "#"} className="group block">
-        <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm">
+      <Link to={recipeId ? `/recipes/${recipeId}` : "#"} className="group block h-full">
+        <div className="h-full overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm">
           <div className="relative">
             <img
                 src={imageUrl}
                 alt={title}
-                className="h-56 w-full object-cover transition group-hover:scale-[1.02]"
+                className="h-48 w-full object-cover transition group-hover:scale-[1.02] sm:h-56"
                 onError={(e) => {
                   e.currentTarget.src =
                       "https://via.placeholder.com/900x600?text=Recipe";
@@ -288,10 +311,13 @@ function CommunityRecipeCard({ recipe }) {
           </div>
 
           <div className="p-4">
-            <h3 className="text-2xl font-bold leading-tight text-[var(--color-text)]">
+            <h3 className="text-xl font-bold leading-tight text-[var(--color-text)] sm:text-2xl">
               {title}
             </h3>
-            <p className="mt-2 text-[var(--color-text-muted)]">by {authorUsername}</p>
+
+            <p className="mt-2 text-sm text-[var(--color-text-muted)] sm:text-base">
+              by {authorUsername}
+            </p>
           </div>
         </div>
       </Link>

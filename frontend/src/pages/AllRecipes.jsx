@@ -7,7 +7,6 @@ const filters = {
   diet: ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free"],
   cookTime: ["Under 20 min", "20-40 min", "Over 40 min"],
   cuisine: ["Mediterranean", "Asian", "American", "Mexican"],
-  difficulty: ["Easy", "Medium", "Hard"],
 };
 
 const sortOptions = ["Newest", "Most Popular", "Quick First"];
@@ -19,12 +18,19 @@ export default function AllRecipes() {
   const [error, setError] = useState("");
   const [activeSort, setActiveSort] = useState("Newest");
 
+  const [selectedFilters, setSelectedFilters] = useState({
+    diet: [],
+    cookTime: [],
+    cuisine: [],
+  });
+
   useEffect(() => {
     loadRecipes();
   }, []);
 
   async function loadRecipes() {
     try {
+      setLoading(true);
       const data = await getAllRecipes();
       setRecipes(Array.isArray(data) ? data : []);
       setError("");
@@ -46,35 +52,77 @@ export default function AllRecipes() {
     }
 
     try {
+      setLoading(true);
       const data = await searchRecipes(value);
       setRecipes(Array.isArray(data) ? data : []);
       setError("");
     } catch (error) {
       setError("Search is unavailable right now.");
       setRecipes([]);
+    } finally {
+      setLoading(false);
     }
   }
 
-  const sortedRecipes = useMemo(() => {
-    const copied = [...recipes];
+  function handleFilterChange(type, value) {
+    setSelectedFilters((prev) => {
+      const isSelected = prev[type].includes(value);
+
+      return {
+        ...prev,
+        [type]: isSelected
+            ? prev[type].filter((item) => item !== value)
+            : [...prev[type], value],
+      };
+    });
+  }
+
+  const filteredRecipes = useMemo(() => {
+    let result = [...recipes];
+
+    if (selectedFilters.diet.length > 0) {
+      result = result.filter((recipe) =>
+          selectedFilters.diet.includes(recipe?.dietaryTag)
+      );
+    }
+
+    if (selectedFilters.cuisine.length > 0) {
+      result = result.filter((recipe) =>
+          selectedFilters.cuisine.includes(recipe?.cuisineType)
+      );
+    }
+
+
+    if (selectedFilters.cookTime.length > 0) {
+      result = result.filter((recipe) => {
+        const time = recipe?.cookingTimeMinutes ?? 0;
+
+        return selectedFilters.cookTime.some((filter) => {
+          if (filter === "Under 20 min") return time < 20;
+          if (filter === "20-40 min") return time >= 20 && time <= 40;
+          if (filter === "Over 40 min") return time > 40;
+          return true;
+        });
+      });
+    }
 
     if (activeSort === "Quick First") {
-      return copied.sort(
+      result.sort(
           (a, b) => (a.cookingTimeMinutes ?? 0) - (b.cookingTimeMinutes ?? 0)
       );
     }
 
-    return copied;
-  }, [recipes, activeSort]);
+    return result;
+  }, [recipes, selectedFilters, activeSort]);
 
   return (
       <div className="bg-[var(--color-background)] text-[var(--color-text)]">
-        <section className="mx-auto max-w-7xl px-4 py-12">
-          <h1 className="text-5xl font-extrabold tracking-tight text-[var(--color-text)]">
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+          <h1 className="text-4xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-5xl">
             All Recipes
           </h1>
 
-          <p className="mt-4 text-xl text-[var(--color-text-muted)]">
+          <p className="mt-4 text-base text-[var(--color-text-muted)] sm:text-xl">
             Discover healthy, delicious recipes curated for your lifestyle
           </p>
 
@@ -84,20 +132,41 @@ export default function AllRecipes() {
               </div>
           )}
 
-          <div className="mt-10 grid gap-6 lg:grid-cols-[260px_1fr]">
-            <aside className="h-fit rounded-3xl bg-[var(--color-surface)] p-6 shadow-sm border border-[var(--color-border)]">
-              <h2 className="text-2xl font-bold text-[var(--color-text)]">Filters</h2>
+          <div className="mt-8 grid gap-6 lg:mt-10 lg:grid-cols-[260px_1fr]">
+            <aside className="h-fit rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm sm:p-6">
+              <h2 className="text-2xl font-bold text-[var(--color-text)]">
+                Filters
+              </h2>
 
-              <FilterGroup title="DIET" items={filters.diet} />
-              <FilterGroup title="COOK TIME" items={filters.cookTime} />
-              <FilterGroup title="CUISINE" items={filters.cuisine} />
-              <FilterGroup title="DIFFICULTY" items={filters.difficulty} />
+              <FilterGroup
+                  title="DIET"
+                  type="diet"
+                  items={filters.diet}
+                  selected={selectedFilters.diet}
+                  onChange={handleFilterChange}
+              />
+
+              <FilterGroup
+                  title="COOK TIME"
+                  type="cookTime"
+                  items={filters.cookTime}
+                  selected={selectedFilters.cookTime}
+                  onChange={handleFilterChange}
+              />
+
+              <FilterGroup
+                  title="CUISINE"
+                  type="cuisine"
+                  items={filters.cuisine}
+                  selected={selectedFilters.cuisine}
+                  onChange={handleFilterChange}
+              />
             </aside>
 
             <div>
-              <div className="mb-5 rounded-3xl bg-[var(--color-surface)] p-4 shadow-sm border border-[var(--color-border)]">
+              <div className="mb-5 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex flex-1 items-center gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                     <div className="relative w-full lg:max-w-md">
                       <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
                       <input
@@ -109,8 +178,8 @@ export default function AllRecipes() {
                       />
                     </div>
 
-                    <p className="hidden text-sm text-[var(--color-text-muted)] md:block">
-                      Showing {sortedRecipes.length} recipes
+                    <p className="text-sm text-[var(--color-text-muted)]">
+                      Showing {filteredRecipes.length} recipes
                     </p>
                   </div>
 
@@ -134,22 +203,22 @@ export default function AllRecipes() {
               </div>
 
               {loading ? (
-                  <div className="rounded-3xl bg-[var(--color-surface)] p-10 text-center text-[var(--color-text-muted)] shadow-sm border border-[var(--color-border)]">
+                  <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-10 text-center text-[var(--color-text-muted)] shadow-sm">
                     Loading recipes...
                   </div>
-              ) : sortedRecipes.length > 0 ? (
-                  <div className="grid gap-6 md:grid-cols-2">
-                    {sortedRecipes.map((recipe) => (
+              ) : filteredRecipes.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {filteredRecipes.map((recipe) => (
                         <LargeRecipeCard key={recipe.id} recipe={recipe} />
                     ))}
                   </div>
               ) : (
-                  <div className="rounded-3xl bg-[var(--color-surface)] p-10 text-center shadow-sm border border-[var(--color-border)]">
+                  <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-10 text-center shadow-sm">
                     <h3 className="text-2xl font-bold text-[var(--color-text)]">
                       No recipes available yet
                     </h3>
                     <p className="mt-3 text-[var(--color-text-muted)]">
-                      Recipes will appear once creators upload them.
+                      Try changing your search or filters.
                     </p>
                   </div>
               )}
@@ -160,7 +229,7 @@ export default function AllRecipes() {
   );
 }
 
-function FilterGroup({ title, items }) {
+function FilterGroup({ title, type, items, selected, onChange }) {
   return (
       <div className="mt-8">
         <h3 className="mb-4 text-sm font-bold tracking-wide text-[var(--color-text-muted)]">
@@ -175,6 +244,8 @@ function FilterGroup({ title, items }) {
               >
                 <input
                     type="checkbox"
+                    checked={selected.includes(item)}
+                    onChange={() => onChange(type, item)}
                     className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
                 />
                 <span>{item}</span>
@@ -199,20 +270,20 @@ function LargeRecipeCard({ recipe }) {
   return (
       <Link
           to={recipeId ? `/recipes/${recipeId}` : "#"}
-          className="overflow-hidden rounded-3xl bg-[var(--color-surface)] shadow-sm border border-[var(--color-border)] transition hover:shadow-md"
+          className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm transition hover:shadow-md"
       >
         <div className="relative">
           <img
               src={imageUrl}
               alt={title}
-              className="h-64 w-full object-cover"
+              className="h-48 w-full object-cover sm:h-64"
               onError={(e) => {
                 e.currentTarget.src =
                     "https://via.placeholder.com/900x600?text=Recipe";
               }}
           />
 
-          <div className="absolute left-3 top-3 flex gap-2">
+          <div className="absolute left-3 top-3 flex flex-wrap gap-2">
           <span className="rounded-full bg-[var(--color-surface)]/95 px-3 py-1 text-xs font-semibold text-[var(--color-text)]">
             {cuisineType}
           </span>
@@ -230,11 +301,11 @@ function LargeRecipeCard({ recipe }) {
         </div>
 
         <div className="p-5">
-          <h3 className="text-3xl font-bold leading-tight text-[var(--color-text)]">
+          <h3 className="text-2xl font-bold leading-tight text-[var(--color-text)] sm:text-3xl">
             {title}
           </h3>
 
-          <p className="mt-3 text-base leading-7 text-[var(--color-text-muted)]">
+          <p className="mt-3 text-sm leading-7 text-[var(--color-text-muted)] sm:text-base">
             Discover this recipe and view the full details on the recipe page.
           </p>
 
