@@ -13,6 +13,8 @@ import {
   getRecipeById,
   getCommentsForRecipe,
   addComment,
+  addRecipeRating,
+  getAverageRecipeRating,
 } from "../services/recipeService";
 
 export default function RecipeDetails() {
@@ -23,6 +25,7 @@ export default function RecipeDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [averageRating, setAverageRating] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
@@ -31,6 +34,8 @@ export default function RecipeDetails() {
       try {
         const data = await getRecipeById(id);
         const commentsData = await getCommentsForRecipe(id);
+        const ratingData = await getAverageRecipeRating(id);
+        setAverageRating(ratingData);
 
         setRecipe(data);
         setComments(Array.isArray(commentsData) ? commentsData : []);
@@ -69,16 +74,7 @@ export default function RecipeDetails() {
         .filter(Boolean);
   }, [recipe]);
 
-  const averageRating = useMemo(() => {
-    if (!comments.length) return "4.8";
 
-    const total = comments.reduce(
-        (sum, item) => sum + Number(item.rating || 0),
-        0
-    );
-
-    return (total / comments.length).toFixed(1);
-  }, [comments]);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -107,16 +103,29 @@ export default function RecipeDetails() {
     }
 
     try {
+
+      await addRecipeRating(id, "Guest", rating);
+
+
       const newComment = await addComment(id, {
         text: comment,
         rating,
         authorUsername: "Guest",
       });
 
+      // reload updated rating
+      const updatedRating = await getAverageRecipeRating(id);
+
+      // update  immediately
       setComments((prev) => [newComment, ...prev]);
+      setAverageRating(updatedRating);
+
+      // reset rating and comment
       setRating(0);
       setComment("");
+
     } catch (error) {
+      console.error(error);
       alert("Could not submit review.");
     }
   };
@@ -231,7 +240,7 @@ export default function RecipeDetails() {
                       icon={
                         <Star className="h-5 w-5 text-[var(--color-accent)]" />
                       }
-                      value={averageRating}
+                      value={averageRating !== null ? Number(averageRating).toFixed(1) : "--"}
                       label="rating"
                   />
                   <StatBox

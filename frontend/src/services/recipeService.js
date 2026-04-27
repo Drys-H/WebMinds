@@ -57,3 +57,32 @@ export async function addComment(recipeId, commentData) {
 
   return response.json();
 }
+
+export async function addRecipeRating(recipeId, username, score) {
+  const response = await fetch(
+      `${API_BASE_URL}/recipes/${recipeId}/ratings?username=${encodeURIComponent(
+          username
+      )}&score=${score}`,
+      {
+        method: "POST",
+      }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to add rating");
+  }
+
+  return response.text();
+}
+
+export async function getAverageRecipeRating(recipeId) {
+  const response = await fetch(
+      `${API_BASE_URL}/recipes/${recipeId}/ratings/average`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch average rating");
+  }
+
+  return response.json();
+}
