@@ -12,5 +12,7 @@ public interface RecipeService {
     RecipeDTO createRecipe(RecipeDTO recipeDTO);
     List<RecipeDTO> searchRecipes(String keyword);
     void deleteRecipe(Long recipeId);
+    void addRatingToRecipe(Long recipeId, String username, int score);
+    double getAverageRating(Long recipeId);
 
 }
