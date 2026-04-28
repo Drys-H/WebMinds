@@ -6,7 +6,7 @@ export default function SignIn() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    email: "",
+    username: "",
     password: ""
   });
 
@@ -30,7 +30,7 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.password) {
+    if (!form.username || !form.password) {
       setError("Please fill in all fields");
       return;
     }
@@ -70,9 +70,9 @@ export default function SignIn() {
             <form onSubmit={handleSubmit} style={formStyle}>
 
               <input
-                  name="email"
+                  name="username"
                   placeholder="Email address"
-                  value={form.email}
+                  value={form.username}
                   onChange={handleChange}
                   style={input}
               />
@@ -121,7 +121,7 @@ const card = {
   borderRadius: "20px",
   background: "var(--surface)",
   textAlign: "center",
-  boxShadow: "0 8px 25px rgba(0,0,0,0.05)"
+  boxShadow: "0 10px 30px rgba(0,0,0,0.08)"
 };
 
 const title = {
