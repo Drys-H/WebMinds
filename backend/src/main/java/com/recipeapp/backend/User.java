@@ -1,4 +1,4 @@
-cd backendpackage com.recipeapp.backend;
+package com.recipeapp.backend;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
