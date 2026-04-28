@@ -2,12 +2,14 @@ package com.recipeapp.backend.service;
 
 import com.recipeapp.backend.Recipe;
 import com.recipeapp.backend.Role;
+import com.recipeapp.backend.ShoppingList;
 import com.recipeapp.backend.User;
 import com.recipeapp.backend.dto.AuthResponseDTO;
 import com.recipeapp.backend.dto.LoginRequestDTO;
 import com.recipeapp.backend.dto.RecipeDTO;
 import com.recipeapp.backend.dto.RegistrationFormDTO;
 import com.recipeapp.backend.repository.RecipeRepository;
+import com.recipeapp.backend.repository.ShoppingListRepository;
 import com.recipeapp.backend.repository.UserRepository;
 import com.recipeapp.backend.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,16 +31,19 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RecipeRepository recipeRepository;
+    private final ShoppingListRepository shoppingListRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            AuthenticationManager authenticationManager,
-                           JwtService jwtService, RecipeRepository recipeRepository) {
+                           JwtService jwtService, RecipeRepository recipeRepository,
+                           ShoppingListRepository shoppingListRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.recipeRepository = recipeRepository;
+        this.shoppingListRepository = shoppingListRepository;
     }
 
     @Override
@@ -149,5 +154,41 @@ public class UserServiceImpl implements UserService {
         }
 
         return dto;
+    }
+
+    @Override
+    public void addRecipeIngredientsToShoppingList(String username, Long recipeId, String tokenUsername) {
+
+        if (!username.equals(tokenUsername)) {
+            throw new RuntimeException("You are not allowed to modify another user's shopping lists.");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .stream().findFirst()
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found"));
+
+        ShoppingList shoppingList = new ShoppingList();
+        shoppingList.setName("Ingredients for: " + recipe.getTitle());
+        shoppingList.setUser(user);
+        shoppingList.getIngredients().addAll(recipe.getIngredients());
+
+        shoppingListRepository.save(shoppingList);
+    }
+
+    @Override
+    public List<ShoppingList> getShoppingLists(String username, String tokenUsername) {
+
+        if (!username.equals(tokenUsername)) {
+            throw new RuntimeException("You are not allowed to view another user's shopping lists.");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .stream().findFirst()
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return shoppingListRepository.findByUser(user);
     }
 }

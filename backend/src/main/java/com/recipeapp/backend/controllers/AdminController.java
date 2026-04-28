@@ -1,23 +1,18 @@
 package com.recipeapp.backend.controllers;
 
-import com.recipeapp.backend.repository.CommentRepository;
-import com.recipeapp.backend.repository.RecipeRepository;
 import com.recipeapp.backend.service.CommentService;
 import com.recipeapp.backend.service.RecipeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 
 
 @RestController
 @RequestMapping("/api/admin")
-//@CrossOrigin(origins = "http://localhost:5173", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class AdminController {
 
     private final RecipeService recipeService;
