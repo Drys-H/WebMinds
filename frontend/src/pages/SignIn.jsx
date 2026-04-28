@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { loginUser } from "../services/api";
+import { toggleDarknight } from "../components/layout/Layout.jsx";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -55,24 +55,11 @@ export default function SignIn() {
   };
 
   return (
-    <div>
-      <Navbar />
-
-      {/* DARK MODE TOGGLE */}
-      <div style={toggleWrap}>
-        <button onClick={() => setDarkMode(!darkMode)} style={toggleBtn}>
-          {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-        </button>
-      </div>
-
-      <div style={container}>
-        <div style={card}>
-
           <h2 style={title}>Welcome Back</h2>
 
-          <p style={subtitle}>
-            Sign in to your Fit & Fresh account
-          </p>
+           <p style={subtitle}>
+             Sign in to your Fit & Fresh account
+           </p>
 
           {error && <p style={errorText}>{error}</p>}
 
