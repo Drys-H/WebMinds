@@ -27,6 +27,7 @@ public class SecurityConfig {
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         //Anyone can register and login
                         .requestMatchers("/api/users/register", "/api/users/login").permitAll()
                         //Anyone can VIEW recipes
