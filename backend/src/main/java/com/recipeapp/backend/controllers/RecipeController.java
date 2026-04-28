@@ -1,6 +1,7 @@
 package com.recipeapp.backend.controllers;
 
 import com.recipeapp.backend.dto.CommentDTO;
+import com.recipeapp.backend.dto.CommentRequestDTO;
 import com.recipeapp.backend.dto.RecipeDTO;
 import com.recipeapp.backend.service.CommentService;
 import com.recipeapp.backend.service.RecipeService;
@@ -53,5 +54,27 @@ public class RecipeController {
     public ResponseEntity<List<CommentDTO>> getCommentsForRecipe(@PathVariable Long id) {
 
         return ResponseEntity.ok(commentService.getCommentsForRecipe(id));
+    }
+
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<CommentDTO> addComment(@PathVariable Long id, @RequestBody CommentRequestDTO commentDTO) {
+
+        return ResponseEntity.ok(commentService.addComment(id, commentDTO));
+    }
+
+    @PostMapping("/{recipeId}/ratings")
+    public ResponseEntity<String> addRating(
+            @PathVariable Long recipeId,
+            @RequestParam String username,
+            @RequestParam int score) {
+
+        recipeService.addRatingToRecipe(recipeId, username, score);
+        return ResponseEntity.ok("Rating saved successfully!");
+    }
+
+    @GetMapping("/{recipeId}/ratings/average")
+    public ResponseEntity<Double> getAverageRating(@PathVariable Long recipeId) {
+        double average = recipeService.getAverageRating(recipeId);
+        return ResponseEntity.ok(average);
     }
 }

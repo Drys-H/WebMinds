@@ -1,10 +1,12 @@
 package com.recipeapp.backend.service;
 
 import com.recipeapp.backend.Ingredient;
+import com.recipeapp.backend.Rating;
 import com.recipeapp.backend.Recipe;
 import com.recipeapp.backend.User;
 import com.recipeapp.backend.dto.RecipeDTO;
 import com.recipeapp.backend.repository.IngredientRepository;
+import com.recipeapp.backend.repository.RatingRepository;
 import com.recipeapp.backend.repository.RecipeRepository;
 import com.recipeapp.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,13 @@ public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
+    private final RatingRepository ratingRepository;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository, UserRepository userRepository,  IngredientRepository ingredientRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, UserRepository userRepository, IngredientRepository ingredientRepository, RatingRepository ratingRepository) {
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
         this.ingredientRepository = ingredientRepository;
+        this.ratingRepository = ratingRepository;
     }
 
     public List<RecipeDTO> getAllRecipes() {
@@ -115,4 +119,98 @@ public class RecipeServiceImpl implements RecipeService {
         return dto;
 
     }
+
+    @Override
+    public void deleteRecipe(Long recipeId) {
+
+        if (!recipeRepository.existsById(recipeId)) {
+            throw new RuntimeException("Recipe not found with ID: " + recipeId);
+        }
+        recipeRepository.deleteById(recipeId);
+    }
+
+    @Override
+    public void addRatingToRecipe(Long recipeId, String username, int score){
+
+        if (score < 1 || score > 5) {
+            throw new RuntimeException("Rating must be between 1 and 5.");
+        }
+
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe with ID: " + recipeId + " not found"));
+
+        List<User> users = userRepository.findByUsername(username);
+        if (users.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User user = users.get(0);
+
+        List<Rating> existingRatings = ratingRepository.findByUserAndRecipe(user, recipe);
+
+        Rating rating;
+        if (existingRatings.isEmpty()) {
+            rating = new Rating();
+        } else {
+            rating = existingRatings.get(0);
+        }
+
+        rating.setScore(score);
+        rating.setUser(user);
+        rating.setRecipe(recipe);
+
+        ratingRepository.save(rating);
+
+    }
+
+    @Override
+    public double getAverageRating(Long recipeId) {
+        List<Rating> ratings = ratingRepository.findByRecipeId(recipeId);
+
+        if (ratings.isEmpty()) {
+            return 0.0;
+        }
+
+        double sum = 0;
+        for (Rating r : ratings) {
+            sum += r.getScore();
+        }
+
+        return Math.round((sum / ratings.size()) * 10.0) / 10.0;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
