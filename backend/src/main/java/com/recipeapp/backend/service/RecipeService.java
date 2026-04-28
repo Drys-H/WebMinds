@@ -14,5 +14,7 @@ public interface RecipeService {
     void deleteRecipe(Long recipeId);
     void addRatingToRecipe(Long recipeId, String username, int score);
     double getAverageRating(Long recipeId);
+    void updateRecipe(Long id, RecipeDTO recipeDTO, String username);
+    void deleteRecipe(Long id, String username);
 
 }

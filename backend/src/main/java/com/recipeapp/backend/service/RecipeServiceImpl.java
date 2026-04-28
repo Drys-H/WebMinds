@@ -178,39 +178,44 @@ public class RecipeServiceImpl implements RecipeService {
         return Math.round((sum / ratings.size()) * 10.0) / 10.0;
     }
 
+    @Override
+    public void updateRecipe(Long id, RecipeDTO recipeDTO, String username) {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recipe not found"));
 
+        if (!recipe.getAuthor().getUsername().equals(username)) {
+            throw new RuntimeException("Only the creator is allowed to make any changes to this recipe!");
+        }
 
+        recipe.setTitle(recipeDTO.getTitle());
+        recipe.setPreparationSteps(recipeDTO.getPreparationSteps());
+        recipe.setCookingTimeMinutes(recipeDTO.getCookingTimeMinutes());
+        recipe.setServings(recipeDTO.getServings());
+        recipe.setImageUrl(recipeDTO.getImageUrl());
+        recipe.setCuisineType(recipeDTO.getCuisineType());
+        recipe.setDietaryTag(recipeDTO.getDietaryTag());
 
+        if (recipeDTO.getIngredients() != null) {
+            recipe.getIngredients().clear(); // Wipe the old ingredients
 
+            for (String ingredientName : recipeDTO.getIngredients()) {
+                Ingredient newIngredient = new Ingredient();
+                newIngredient.setName(ingredientName);
+                recipe.getIngredients().add(newIngredient);
+            }
+        }
+        recipeRepository.save(recipe);
+    }
 
+    @Override
+    public void deleteRecipe(Long id, String username) {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recipe not found"));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if (!recipe.getAuthor().getUsername().equals(username)) {
+            throw new RuntimeException("Only the creator is allowed to delete this recipe!");
+        }
+        recipeRepository.delete(recipe);
+    }
 
 }

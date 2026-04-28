@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 
 @RestController
 @RequestMapping("/api/admin")
+@CrossOrigin(origins = "http://localhost:5173", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class AdminController {
 
     private final RecipeService recipeService;
@@ -27,14 +29,14 @@ public class AdminController {
     }
 
     @DeleteMapping("/recipes/{id}")
-    public ResponseEntity<String> deleteRecipe(@PathVariable Long recipeId){
+    public ResponseEntity<String> deleteRecipe(@PathVariable("id") Long recipeId){
 
         recipeService.deleteRecipe(recipeId);
         return ResponseEntity.ok().body("Recipe Deleted");
     }
 
     @DeleteMapping("/comments/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
+    public ResponseEntity<String> deleteComment(@PathVariable("id") Long commentId) {
 
         commentService.deleteComment(commentId);
         return ResponseEntity.ok().body("Comment Deleted");

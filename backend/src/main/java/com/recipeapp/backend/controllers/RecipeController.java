@@ -7,13 +7,15 @@ import com.recipeapp.backend.service.CommentService;
 import com.recipeapp.backend.service.RecipeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/recipes")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class RecipeController {
 
     private final RecipeService recipeService;
@@ -74,7 +76,27 @@ public class RecipeController {
 
     @GetMapping("/{recipeId}/ratings/average")
     public ResponseEntity<Double> getAverageRating(@PathVariable Long recipeId) {
+
         double average = recipeService.getAverageRating(recipeId);
         return ResponseEntity.ok(average);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateRecipe(
+            @PathVariable Long id,
+            @RequestBody RecipeDTO recipeDTO,
+            Principal principal) {
+
+        recipeService.updateRecipe(id, recipeDTO, principal.getName());
+        return ResponseEntity.ok("Recipe updated successfully!");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRecipe(
+            @PathVariable Long id,
+            Principal principal) {
+
+        recipeService.deleteRecipe(id, principal.getName());
+        return ResponseEntity.ok("Recipe deleted successfully!");
     }
 }
