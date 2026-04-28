@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/api";
-import { toggleDarknight } from "../components/layout/Layout.jsx";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -55,47 +54,54 @@ export default function SignIn() {
   };
 
   return (
-          <h2 style={title}>Welcome Back</h2>
+      <div>
 
-           <p style={subtitle}>
-             Sign in to your Fit & Fresh account
-           </p>
+        <div style={container}>
+          <div style={card}>
 
-          {error && <p style={errorText}>{error}</p>}
+            <h2 style={title}>Welcome Back</h2>
 
-          <form onSubmit={handleSubmit} style={formStyle}>
+            <p style={subtitle}>
+              Sign in to your Fit & Fresh account
+            </p>
 
-            <input
-              name="email"
-              placeholder="Email address"
-              value={form.email}
-              onChange={handleChange}
-            />
+            {error && <p style={errorText}>{error}</p>}
 
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-            />
+            <form onSubmit={handleSubmit} style={formStyle}>
 
-            <button style={signInBtn} disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
-            </button>
+              <input
+                  name="email"
+                  placeholder="Email address"
+                  value={form.email}
+                  onChange={handleChange}
+                  style={input}
+              />
 
-          </form>
+              <input
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={handleChange}
+                  style={input}
+              />
 
-          <p style={bottomText}>
-            Don't have an account?{" "}
-            <span onClick={() => navigate("/register")} style={link}>
+              <button style={signInBtn} disabled={loading}>
+                {loading ? "Signing in..." : "Sign In"}
+              </button>
+
+            </form>
+
+            <p style={bottomText}>
+              Don't have an account?{" "}
+              <span onClick={() => navigate("/register")} style={link}>
               Create one
             </span>
-          </p>
+            </p>
 
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
@@ -105,7 +111,8 @@ const container = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  height: "80vh"
+  minHeight: "100vh",
+  padding: "20px"
 };
 
 const card = {
@@ -133,9 +140,14 @@ const formStyle = {
 };
 
 const signInBtn = {
-  background: "var(--primary)",
+  background: "#e07a4f",
   color: "white",
-  marginTop: "10px"
+  marginTop: "10px",
+  padding: "12px",
+  borderRadius: "10px",
+  border: "none",
+  cursor: "pointer",
+  fontWeight: "600"
 };
 
 const errorText = {
@@ -164,3 +176,15 @@ const toggleBtn = {
   background: "var(--surface)",
   border: "1px solid var(--border)"
 };
+
+const input = {
+  padding: "12px",
+  borderRadius: "10px",
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+  color: "var(--text)",
+  outline: "none"
+};
+
+
+
