@@ -7,6 +7,7 @@ import com.recipeapp.backend.service.CommentService;
 import com.recipeapp.backend.service.RecipeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.security.Principal;
 import java.util.ArrayList;
