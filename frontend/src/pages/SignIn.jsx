@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/api";
 
@@ -12,16 +12,6 @@ export default function SignIn() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-
-  /* DARK MODE */
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
-  }, [darkMode]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -41,7 +31,6 @@ export default function SignIn() {
 
       const data = await loginUser(form);
 
-      // store logged in user locally
       localStorage.setItem("user", JSON.stringify({
         username: form.username,
         token: data.token
@@ -57,137 +46,64 @@ export default function SignIn() {
   };
 
   return (
-      <div>
+      <div className="flex justify-center items-center min-h-screen px-4 bg-[var(--color-background)] text-[var(--color-text)]">
 
-        <div style={container}>
-          <div style={card}>
+        <div className="w-full max-w-md p-10 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-lg text-center">
 
-            <h2 style={title}>Welcome Back</h2>
+          <h2 className="text-2xl font-bold mb-2">
+            Welcome Back
+          </h2>
 
-            <p style={subtitle}>
-              Sign in to your Fit & Fresh account
-            </p>
+          <p className="text-[var(--color-text-muted)] mb-6">
+            Sign in to your Fresh & Fit account
+          </p>
 
-            {error && <p style={errorText}>{error}</p>}
+          {error && (
+              <p className="text-red-500 text-sm mb-4">
+                {error}
+              </p>
+          )}
 
-            <form onSubmit={handleSubmit} style={formStyle}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-              <input
-                  name="username"
-                  placeholder="Email address"
-                  value={form.username}
-                  onChange={handleChange}
-                  style={input}
-              />
+            <input
+                name="username"
+                placeholder="Email address"
+                value={form.username}
+                onChange={handleChange}
+                className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            />
 
-              <input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  value={form.password}
-                  onChange={handleChange}
-                  style={input}
-              />
+            <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            />
 
-              <button style={signInBtn} disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
-              </button>
+            <button
+                disabled={loading}
+                className="mt-2 p-3 rounded-lg text-white font-semibold"
+                style={{ background: "var(--color-accent)" }}
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
 
-            </form>
+          </form>
 
-            <p style={bottomText}>
-              Don't have an account?{" "}
-              <span onClick={() => navigate("/register")} style={link}>
-              Create one
-            </span>
-            </p>
+          <p className="mt-6 text-sm text-[var(--color-text-muted)]">
+            Don't have an account?{" "}
+            <span
+                onClick={() => navigate("/register")}
+                className="text-[var(--color-primary)] cursor-pointer font-semibold"
+            >
+            Create one
+          </span>
+          </p>
 
-          </div>
         </div>
       </div>
   );
 }
-
-/* ================= STYLES ================= */
-
-const container = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minHeight: "100vh",
-  padding: "20px"
-};
-
-const card = {
-  width: "400px",
-  padding: "40px",
-  borderRadius: "20px",
-  background: "var(--surface)",
-  textAlign: "center",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.08)"
-};
-
-const title = {
-  marginBottom: "10px"
-};
-
-const subtitle = {
-  color: "var(--text-light)",
-  marginBottom: "20px"
-};
-
-const formStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "15px"
-};
-
-const signInBtn = {
-  background: "#e07a4f",
-  color: "white",
-  marginTop: "10px",
-  padding: "12px",
-  borderRadius: "10px",
-  border: "none",
-  cursor: "pointer",
-  fontWeight: "600"
-};
-
-const errorText = {
-  color: "#e76f51",
-  marginBottom: "10px"
-};
-
-const bottomText = {
-  marginTop: "20px",
-  fontSize: "14px"
-};
-
-const link = {
-  color: "#6f8f6b",
-  cursor: "pointer",
-  fontWeight: "600"
-};
-
-const toggleWrap = {
-  display: "flex",
-  justifyContent: "flex-end",
-  padding: "20px 60px"
-};
-
-const toggleBtn = {
-  background: "var(--surface)",
-  border: "1px solid var(--border)"
-};
-
-const input = {
-  padding: "12px",
-  borderRadius: "10px",
-  border: "1px solid var(--border)",
-  background: "var(--surface)",
-  color: "var(--text)",
-  outline: "none"
-};
-
-
-
