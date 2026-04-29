@@ -43,35 +43,35 @@ export async function getCommentsForRecipe(recipeId) {
 }
 
 export async function addComment(recipeId, commentData) {
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const response = await fetch(`${API_BASE_URL}/recipes/${recipeId}/comments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${user?.token}`,
     },
     body: JSON.stringify(commentData),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to add comment");
-  }
-
+  if (!response.ok) throw new Error("Failed to add comment");
   return response.json();
 }
 
 export async function addRecipeRating(recipeId, username, score) {
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const response = await fetch(
-      `${API_BASE_URL}/recipes/${recipeId}/ratings?username=${encodeURIComponent(
-          username
-      )}&score=${score}`,
+      `${API_BASE_URL}/recipes/${recipeId}/ratings?username=${encodeURIComponent(username)}&score=${score}`,
       {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
       }
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to add rating");
-  }
-
+  if (!response.ok) throw new Error("Failed to add rating");
   return response.text();
 }
 
@@ -143,14 +143,32 @@ export async function removeSavedRecipe(username, recipeId) {
   return response.text();
 }
 
+
+
+function handleAuthError(response) {
+  if (response.status === 401 || response.status === 403) {
+    localStorage.removeItem("user");
+    alert("Session expired. Please sign in again.");
+    window.location.href = "/signin";
+    return true;
+  }
+
+  return false;
+}
+
 export async function createRecipe(recipeData) {
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const response = await fetch(`${API_BASE_URL}/recipes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${user?.token}`,
     },
     body: JSON.stringify(recipeData),
   });
+
+  if (handleAuthError(response)) return;
 
   if (!response.ok) {
     throw new Error("Failed to create recipe");

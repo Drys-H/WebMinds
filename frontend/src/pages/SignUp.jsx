@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/api";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -56,27 +57,15 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          username: form.username,
-          password: form.password
-        })
+      await registerUser({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        username: form.username,
+        password: form.password
       });
 
-      if (!res.ok) {
-        throw new Error("Signup failed");
-      }
-
       setSuccess("Account created successfully 🎉");
-
-      // since backend doesn't return user → go to sign in
       setTimeout(() => navigate("/signin"), 1200);
 
     } catch (err) {
@@ -87,69 +76,69 @@ export default function SignUp() {
   };
 
   return (
-    <div style={container}>
+      <div style={container}>
 
-      {/* LEFT SIDE */}
-      <div style={leftSide}>
-        <div style={overlay}>
-          <h1>Join 8,000+ food lovers</h1>
-          <p>Create your free account and start cooking healthier today.</p>
+        {/* LEFT SIDE */}
+        <div style={leftSide}>
+          <div style={overlay}>
+            <h1>Join 8,000+ food lovers</h1>
+            <p>Create your free account and start cooking healthier today.</p>
+          </div>
         </div>
-      </div>
 
-      {/* RIGHT SIDE */}
-      <div style={rightSide}>
-        <h2>Create your account</h2>
+        {/* RIGHT SIDE */}
+        <div style={rightSide}>
+          <h2>Create your account</h2>
 
-        <p>
-          Already have one?{" "}
-          <span style={link} onClick={() => navigate("/signin")}>
+          <p>
+            Already have one?{" "}
+            <span style={link} onClick={() => navigate("/signin")}>
             Sign in
           </span>
-        </p>
+          </p>
 
-        {error && <p style={errorText}>{error}</p>}
-        {success && <p style={successText}>{success}</p>}
+          {error && <p style={errorText}>{error}</p>}
+          {success && <p style={successText}>{success}</p>}
 
-        <form onSubmit={handleSubmit} style={formStyle}>
+          <form onSubmit={handleSubmit} style={formStyle}>
 
-          <div style={{ display: "flex", gap: "10px" }}>
-            <input name="firstName" placeholder="First Name" onChange={handleChange} style={input} />
-            <input name="lastName" placeholder="Last Name" onChange={handleChange} style={input} />
-          </div>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input name="firstName" placeholder="First Name" onChange={handleChange} style={input} />
+              <input name="lastName" placeholder="Last Name" onChange={handleChange} style={input} />
+            </div>
 
-          <input name="email" placeholder="Email" onChange={handleChange} style={input} />
-          <input name="username" placeholder="Username" onChange={handleChange} style={input} />
+            <input name="email" placeholder="Email" onChange={handleChange} style={input} />
+            <input name="username" placeholder="Username" onChange={handleChange} style={input} />
 
-          {/* PASSWORD */}
-          <div style={{ position: "relative" }}>
-            <input
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              onChange={handleChange}
-              style={input}
-            />
-            <span style={toggle} onClick={() => setShowPassword(!showPassword)}>
+            {/* PASSWORD */}
+            <div style={{ position: "relative" }}>
+              <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  onChange={handleChange}
+                  style={input}
+              />
+              <span style={toggle} onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? "Hide" : "Show"}
             </span>
-          </div>
+            </div>
 
-          <input
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm Password"
-            onChange={handleChange}
-            style={input}
-          />
+            <input
+                name="confirmPassword"
+                type="password"
+                placeholder="Confirm Password"
+                onChange={handleChange}
+                style={input}
+            />
 
-          <button type="submit" style={submitBtn} disabled={loading}>
-            {loading ? "Creating..." : "Create Free Account →"}
-          </button>
+            <button type="submit" style={submitBtn} disabled={loading}>
+              {loading ? "Creating..." : "Create Free Account →"}
+            </button>
 
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
   );
 }
 

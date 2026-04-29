@@ -13,6 +13,8 @@ export default function CreateRecipe() {
     ingredients: [""],
     instructions: [""],
     imageUrl: "",
+    cuisineType: "",
+    dietaryTag: "",
   });
 
   useEffect(() => {
@@ -59,8 +61,12 @@ export default function CreateRecipe() {
       description: form.description,
       cookingTimeMinutes: Number(form.cookingTimeMinutes),
       servings: Number(form.servings),
-      ingredients: form.ingredients.filter(Boolean).join(", "),
-      preparationSteps: form.instructions.filter(Boolean).join("\n"),
+      ingredients: form.ingredients.filter((item) => item.trim() !== ""),
+      preparationSteps: form.instructions
+          .filter((step) => step.trim() !== "")
+          .join("\n"),
+      cuisineType: form.cuisineType,
+      dietaryTag: form.dietaryTag,
       imageUrl: form.imageUrl,
       authorUsername: user.username,
     };
@@ -191,6 +197,36 @@ export default function CreateRecipe() {
                   </div>
               ))}
             </section>
+
+            <div className="grid grid-cols-2 gap-4">
+              <select
+                  name="cuisineType"
+                  value={form.cuisineType}
+                  onChange={handleChange}
+                  className="p-3 rounded-xl border border-[var(--color-border)]"
+                  required
+              >
+                <option value="">Select cuisine</option>
+                <option value="Mediterranean">Mediterranean</option>
+                <option value="Asian">Asian</option>
+                <option value="American">American</option>
+                <option value="Mexican">Mexican</option>
+              </select>
+
+              <select
+                  name="dietaryTag"
+                  value={form.dietaryTag}
+                  onChange={handleChange}
+                  className="p-3 rounded-xl border border-[var(--color-border)]"
+                  required
+              >
+                <option value="">Select dietary tag</option>
+                <option value="Vegan">Vegan</option>
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Gluten-Free">Gluten-Free</option>
+                <option value="Dairy-Free">Dairy-Free</option>
+              </select>
+            </div>
 
             <div>
               <label className="block mb-2 text-sm font-semibold">

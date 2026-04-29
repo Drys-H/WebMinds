@@ -14,15 +14,37 @@ export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
+
   useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(savedUser);
+
+
     const savedTheme = localStorage.getItem("theme");
 
     if (savedTheme === "dark") {
       document.documentElement.classList.add("dark");
       setDarkMode(true);
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setDarkMode(false);
     }
+
+    const updateUser = () => {
+      setUser(JSON.parse(localStorage.getItem("user")));
+    };
+
+    updateUser();
+
+    window.addEventListener("userChanged", updateUser);
+
+    return () => {
+      window.removeEventListener("userChanged", updateUser);
+    };
   }, []);
 
   const toggleDarkMode = () => {
@@ -36,6 +58,12 @@ export default function Layout() {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/");
   };
 
   const handleSearchSubmit = (event) => {
@@ -89,17 +117,40 @@ export default function Layout() {
               {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
-            <button className="rounded-full border border-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white">
-              <Link to="/signin">Sign In</Link>
-            </button>
+            {user ? (
+                <>
+                  <Link
+                      to="/profile"
+                      className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300"
+                  >
+                    <User className="h-4 w-4" />
+                  </Link>
 
-            <button className="rounded-full bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90">
-              <Link to="/register">Get Started</Link>
-            </button>
+                  <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="rounded-full border border-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white"
+                  >
+                    Logout
+                  </button>
+                </>
+            ) : (
+                <>
+                  <Link
+                      to="/signin"
+                      className="rounded-full border border-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white"
+                  >
+                    Sign In
+                  </Link>
 
-            <button className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300">
-              <User className="h-4 w-4" />
-            </button>
+                  <Link
+                      to="/register"
+                      className="rounded-full bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                  >
+                    Get Started
+                  </Link>
+                </>
+            )}
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
@@ -163,6 +214,49 @@ export default function Layout() {
                     {link.label}
                   </NavLink>
                 ))}
+              </div>
+
+              <div className="mt-6 border-t border-[var(--color-border)] pt-4">
+                {user ? (
+                    <div className="space-y-3">
+                      <Link
+                          to="/profile"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block rounded-2xl bg-[var(--color-primary)] px-4 py-3 text-center text-sm font-semibold text-white"
+                      >
+                        Profile
+                      </Link>
+
+                      <button
+                          type="button"
+                          onClick={() => {
+                            handleLogout();
+                            setMobileMenuOpen(false);
+                          }}
+                          className="w-full rounded-2xl border border-[var(--color-primary)] px-4 py-3 text-sm font-semibold text-[var(--color-primary)]"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                      <Link
+                          to="/signin"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block rounded-2xl border border-[var(--color-primary)] px-4 py-3 text-center text-sm font-semibold text-[var(--color-primary)]"
+                      >
+                        Sign In
+                      </Link>
+
+                      <Link
+                          to="/register"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block rounded-2xl bg-[var(--color-primary)] px-4 py-3 text-center text-sm font-semibold text-white"
+                      >
+                        Get Started
+                      </Link>
+                    </div>
+                )}
               </div>
             </div>
           </div>

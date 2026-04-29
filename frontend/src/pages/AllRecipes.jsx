@@ -117,9 +117,11 @@ export default function AllRecipes() {
         const time = recipe?.cookingTimeMinutes ?? 0;
 
         return selectedFilters.cookTime.some((filter) => {
-          if (filter === "Under 20 min") return time < 20;
-          if (filter === "20-40 min") return time >= 20 && time <= 40;
-          if (filter === "Over 40 min") return time > 40;
+          if (filter === "Under 15 min") return time < 15;
+          if (filter === "15-30 min") return time >= 15 && time <= 30;
+          if (filter === "30-45 min") return time > 30 && time <= 45;
+          if (filter === "45-60 min") return time > 45 && time <= 60;
+          if (filter === "Over 1 hour") return time > 60;
           return true;
         });
       });
