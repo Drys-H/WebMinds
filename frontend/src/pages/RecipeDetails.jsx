@@ -37,10 +37,10 @@ export default function RecipeDetails() {
         const data = await getRecipeById(id);
         const commentsData = await getCommentsForRecipe(id);
         const ratingData = await getAverageRecipeRating(id);
-        setAverageRating(ratingData);
 
         setRecipe(data);
         setComments(Array.isArray(commentsData) ? commentsData : []);
+        setAverageRating(ratingData);
         setError("");
       } catch (err) {
         setError("Recipe details are unavailable right now.");
@@ -57,7 +57,11 @@ export default function RecipeDetails() {
   const steps = useMemo(() => {
     if (!recipe?.preparationSteps) return [];
 
-    return recipe.preparationSteps
+    if (Array.isArray(recipe.preparationSteps)) {
+      return recipe.preparationSteps.filter(Boolean);
+    }
+
+    return String(recipe.preparationSteps)
         .split(/\r?\n|\.\s+/)
         .map((step) => step.trim())
         .filter(Boolean);
@@ -75,7 +79,6 @@ export default function RecipeDetails() {
         .map((item) => item.trim())
         .filter(Boolean);
   }, [recipe]);
-
 
   function getLoggedInUser() {
     return JSON.parse(localStorage.getItem("user"));
@@ -104,8 +107,6 @@ export default function RecipeDetails() {
       alert("Could not save recipe.");
     }
   };
-
-
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -150,12 +151,12 @@ export default function RecipeDetails() {
     }
   };
 
-
   const title = recipe?.title || "Recipe title";
   const imageUrl =
       recipe?.imageUrl || "https://via.placeholder.com/1400x700?text=Recipe";
   const cuisineType = recipe?.cuisineType || "Cuisine";
-  const dietaryTag = recipe?.dietaryTag || "Tag";
+  const dietaryTag =
+      recipe?.dietaryTag || recipe?.dietaryTags || recipe?.diet || "";
   const cookingTimeMinutes = recipe?.cookingTimeMinutes ?? 0;
   const servings = recipe?.servings ?? 0;
   const authorUsername = recipe?.authorUsername || "Unknown";
@@ -228,8 +229,9 @@ export default function RecipeDetails() {
                 <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur">
                   {cuisineType}
                 </span>
+
                   <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur">
-                  {dietaryTag}
+                  {dietaryTag || "No dietary tag"}
                 </span>
                 </div>
 
@@ -250,7 +252,7 @@ export default function RecipeDetails() {
           <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
             <div>
               <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm sm:p-6">
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                   <StatBox
                       icon={
                         <Clock3 className="h-5 w-5 text-[var(--color-primary)]" />
@@ -258,26 +260,25 @@ export default function RecipeDetails() {
                       value={`${cookingTimeMinutes}`}
                       label="minutes"
                   />
+
                   <StatBox
                       icon={
                         <Star className="h-5 w-5 text-[var(--color-accent)]" />
                       }
-                      value={averageRating !== null ? Number(averageRating).toFixed(1) : "--"}
+                      value={
+                        averageRating !== null
+                            ? Number(averageRating).toFixed(1)
+                            : "--"
+                      }
                       label="rating"
                   />
+
                   <StatBox
                       icon={
                         <Users className="h-5 w-5 text-[var(--color-primary)]" />
                       }
                       value={`${servings}`}
                       label="servings"
-                  />
-                  <StatBox
-                      icon={
-                        <ShoppingCart className="h-5 w-5 text-[var(--color-primary)]" />
-                      }
-                      value="Ready"
-                      label="details"
                   />
                 </div>
               </div>
@@ -308,10 +309,7 @@ export default function RecipeDetails() {
                   ) : (
                       <li className="flex items-start gap-3">
                         <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--color-primary)]" />
-                        <span>
-                      Ingredients will display here when the backend returns
-                      ingredient details.
-                    </span>
+                        <span>No ingredients added.</span>
                       </li>
                   )}
                 </ul>
@@ -329,6 +327,7 @@ export default function RecipeDetails() {
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-sm font-bold text-white">
                               {index + 1}
                             </div>
+
                             <p className="pt-1 text-sm leading-7 text-[var(--color-text)] sm:text-base">
                               {step}
                             </p>
@@ -339,9 +338,9 @@ export default function RecipeDetails() {
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-sm font-bold text-white">
                           1
                         </div>
+
                         <p className="pt-1 text-sm leading-7 text-[var(--color-text)] sm:text-base">
-                          Preparation steps will appear here when the backend
-                          returns them.
+                          No preparation steps added.
                         </p>
                       </div>
                   )}
@@ -400,6 +399,7 @@ export default function RecipeDetails() {
                               <p className="font-semibold text-[var(--color-text)]">
                                 {item.authorUsername || "Guest"}
                               </p>
+
                               <p className="text-sm text-yellow-500">
                                 {"★".repeat(Number(item.rating || 0))}
                               </p>
@@ -429,10 +429,12 @@ export default function RecipeDetails() {
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-border)] text-xl font-bold">
                     {authorUsername.charAt(0).toUpperCase()}
                   </div>
+
                   <div>
                     <p className="text-lg font-bold text-[var(--color-text)]">
                       {authorUsername}
                     </p>
+
                     <p className="text-sm text-[var(--color-text-muted)]">
                       View profile →
                     </p>
@@ -475,9 +477,15 @@ export default function RecipeDetails() {
                 </h3>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                <span className="rounded-full bg-[var(--color-primary)]/10 px-3 py-2 text-sm font-semibold text-[var(--color-primary)]">
-                  {dietaryTag}
-                </span>
+                  {dietaryTag ? (
+                      <span className="rounded-full bg-[var(--color-primary)]/10 px-3 py-2 text-sm font-semibold text-[var(--color-primary)]">
+                    {dietaryTag}
+                  </span>
+                  ) : (
+                      <p className="text-sm text-[var(--color-text-muted)]">
+                        No dietary tag added.
+                      </p>
+                  )}
                 </div>
               </div>
             </aside>
@@ -491,9 +499,11 @@ function StatBox({ icon, value, label }) {
   return (
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] p-4 text-center">
         <div className="mb-2 flex justify-center">{icon}</div>
+
         <p className="text-2xl font-extrabold text-[var(--color-text)] sm:text-3xl">
           {value}
         </p>
+
         <p className="text-sm text-[var(--color-text-muted)]">{label}</p>
       </div>
   );

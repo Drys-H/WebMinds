@@ -35,7 +35,7 @@ export default function SignIn() {
         username: form.username,
         token: data.token
       }));
-
+      window.dispatchEvent(new Event("userChanged"));
       navigate("/profile");
 
     } catch {

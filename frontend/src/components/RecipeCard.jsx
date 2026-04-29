@@ -1,4 +1,5 @@
 import { Clock3 } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function RecipeCard({ recipe, onSave }) {
@@ -11,6 +12,7 @@ export default function RecipeCard({ recipe, onSave }) {
   const cookingTimeMinutes = recipe?.cookingTimeMinutes ?? 0;
   const servings = recipe?.servings ?? 0;
   const authorUsername = recipe?.authorUsername || "Unknown";
+  const [saved, setSaved] = useState(false);
 
   return (
       <Link
@@ -43,9 +45,14 @@ export default function RecipeCard({ recipe, onSave }) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onSave(recipeId);
+                onSave?.(recipeId);
+                setSaved(true);
               }}
-              className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-[var(--color-surface)]/95 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+              className={`absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full ${
+                  saved
+                      ? "bg-red-500 text-white"
+                      : "bg-[var(--color-surface)]/95 text-[var(--color-text-muted)]"
+              }`}
           >
             ❤
           </button>

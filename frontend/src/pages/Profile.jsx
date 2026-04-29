@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getSavedRecipes, removeSavedRecipe } from "../services/recipeService";
+import { Link, useNavigate } from "react-router-dom";
+import { getSavedRecipes, removeSavedRecipe, getAllRecipes } from "../services/recipeService";
 
 export default function Profile() {
   const navigate = useNavigate();
 
+
+  const [myRecipes, setMyRecipes] = useState([]);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("recipes");
   const [savedRecipes, setSavedRecipes] = useState([]);
@@ -19,6 +21,15 @@ export default function Profile() {
     }
 
     setUser(savedUser);
+
+    async function loadMyRecipes() {
+      const recipes = await getAllRecipes();
+      setMyRecipes(
+          recipes.filter((recipe) => recipe.authorUsername === savedUser.username)
+      );
+    }
+
+    loadMyRecipes();
 
     const list = JSON.parse(localStorage.getItem("shoppingList")) || [];
     setShoppingList(list);
@@ -105,12 +116,25 @@ export default function Profile() {
           </div>
 
           {activeTab === "recipes" && (
-              <EmptyState
-                  title="No recipes yet"
-                  text="You haven’t created any recipes yet."
-                  button="Create Your First Recipe"
-                  onClick={() => navigate("/create")}
-              />
+              myRecipes.length === 0 ? (
+                  <EmptyState
+                      title="No recipes yet"
+                      text="You haven’t created any recipes yet."
+                      button="Create Your First Recipe"
+                      onClick={() => navigate("/create")}
+                  />
+              ) : (
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {myRecipes.map((recipe) => (
+                        <Link key={recipe.id} to={`/recipes/${recipe.id}`}>
+                          <SavedRecipeCard
+                              recipe={recipe}
+                              onRemove={null}
+                          />
+                        </Link>
+                    ))}
+                  </div>
+              )
           )}
 
           {activeTab === "saved" && (
@@ -122,11 +146,12 @@ export default function Profile() {
               ) : (
                   <div className="grid gap-6 md:grid-cols-2">
                     {savedRecipes.map((recipe) => (
-                        <SavedRecipeCard
-                            key={recipe.id}
-                            recipe={recipe}
-                            onRemove={() => handleRemoveSaved(recipe.id)}
-                        />
+                        <Link key={recipe.id} to={`/recipes/${recipe.id}`}>
+                          <SavedRecipeCard
+                              recipe={recipe}
+                              onRemove={() => handleRemoveSaved(recipe.id)}
+                          />
+                        </Link>
                     ))}
                   </div>
               )
@@ -176,13 +201,18 @@ function SavedRecipeCard({ recipe, onRemove }) {
           <span className="text-sm text-[var(--color-text-muted)]">
             {recipe.cookingTimeMinutes || 0} min
           </span>
-
-            <button
-                onClick={onRemove}
-                className="text-sm font-semibold text-red-500 hover:underline"
-            >
-              Remove
-            </button>
+            {onRemove && (
+                <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onRemove();
+                    }}
+                    className="text-sm font-semibold text-red-500 hover:underline"
+                >
+                  Remove
+                </button>
+            )}
           </div>
         </div>
       </div>

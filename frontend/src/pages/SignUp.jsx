@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/api";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -56,26 +57,15 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          username: form.username,
-          password: form.password
-        })
+      await registerUser({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        username: form.username,
+        password: form.password
       });
 
-      if (!res.ok) {
-        throw new Error("Signup failed");
-      }
-
       setSuccess("Account created successfully 🎉");
-
       setTimeout(() => navigate("/signin"), 1200);
 
     } catch (err) {
@@ -86,86 +76,50 @@ export default function SignUp() {
   };
 
   return (
-      <div className="flex min-h-screen">
+      <div style={container}>
 
         {/* LEFT SIDE */}
-        <div
-            className="flex-1 bg-cover bg-center relative"
-            style={{
-              backgroundImage:
-                  "url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c')"
-            }}
-        >
-          <div className="absolute bottom-10 left-10 max-w-md text-white">
-            <h1 className="text-2xl font-bold">Join 8,000+ food lovers</h1>
+        <div style={leftSide}>
+          <div style={overlay}>
+            <h1>Join 8,000+ food lovers</h1>
             <p>Create your free account and start cooking healthier today.</p>
           </div>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex-1 flex flex-col justify-center p-16 bg-[var(--color-background)] text-[var(--color-text)]"> {/* UPDATED */}
+        <div style={rightSide}>
+          <h2>Create your account</h2>
 
-          <h2 className="text-2xl font-bold">Create your account</h2>
-
-          <p className="mt-2 text-[var(--color-text-muted)]">
+          <p>
             Already have one?{" "}
-            <span
-                className="text-[var(--color-primary)] cursor-pointer"
-                onClick={() => navigate("/signin")}
-            >
+            <span style={link} onClick={() => navigate("/signin")}>
             Sign in
           </span>
           </p>
 
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-          {success && <p className="text-green-500 text-sm mt-2">{success}</p>}
+          {error && <p style={errorText}>{error}</p>}
+          {success && <p style={successText}>{success}</p>}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-5">
+          <form onSubmit={handleSubmit} style={formStyle}>
 
-            <div className="flex gap-3">
-              <input
-                  name="firstName"
-                  placeholder="First Name"
-                  onChange={handleChange}
-                  className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] w-full"
-              /> {/* UPDATED */}
-
-              <input
-                  name="lastName"
-                  placeholder="Last Name"
-                  onChange={handleChange}
-                  className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] w-full"
-              /> {/* UPDATED */}
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input name="firstName" placeholder="First Name" onChange={handleChange} style={input} />
+              <input name="lastName" placeholder="Last Name" onChange={handleChange} style={input} />
             </div>
 
-            <input
-                name="email"
-                placeholder="Email"
-                onChange={handleChange}
-                className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)]"
-            /> {/* UPDATED */}
-
-            <input
-                name="username"
-                placeholder="Username"
-                onChange={handleChange}
-                className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)]"
-            /> {/* UPDATED */}
+            <input name="email" placeholder="Email" onChange={handleChange} style={input} />
+            <input name="username" placeholder="Username" onChange={handleChange} style={input} />
 
             {/* PASSWORD */}
-            <div className="relative">
+            <div style={{ position: "relative" }}>
               <input
                   name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   onChange={handleChange}
-                  className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] w-full"
-              /> {/* UPDATED */}
-
-              <span
-                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-sm text-[var(--color-text-muted)]"
-                  onClick={() => setShowPassword(!showPassword)}
-              >
+                  style={input}
+              />
+              <span style={toggle} onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? "Hide" : "Show"}
             </span>
             </div>
@@ -175,15 +129,10 @@ export default function SignUp() {
                 type="password"
                 placeholder="Confirm Password"
                 onChange={handleChange}
-                className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)]"
-            /> {/* UPDATED */}
+                style={input}
+            />
 
-            <button
-                type="submit"
-                disabled={loading}
-                className="p-3 rounded-lg text-white font-semibold"
-                style={{ background: "var(--color-accent)" }}
-            >
+            <button type="submit" style={submitBtn} disabled={loading}>
               {loading ? "Creating..." : "Create Free Account →"}
             </button>
 
@@ -192,3 +141,81 @@ export default function SignUp() {
       </div>
   );
 }
+
+/* STYLES */
+
+const container = {
+  display: "flex",
+  height: "100vh"
+};
+
+const leftSide = {
+  flex: 1,
+  backgroundImage: "url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  position: "relative"
+};
+
+const overlay = {
+  position: "absolute",
+  bottom: "40px",
+  left: "40px",
+  color: "white",
+  maxWidth: "400px"
+};
+
+const rightSide = {
+  flex: 1,
+  padding: "60px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center"
+};
+
+const formStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "15px",
+  marginTop: "20px"
+};
+
+const input = {
+  padding: "12px",
+  borderRadius: "8px",
+  border: "1px solid #ddd",
+  width: "100%"
+};
+
+const submitBtn = {
+  padding: "12px",
+  borderRadius: "8px",
+  border: "none",
+  background: "#e07a4f",
+  color: "white",
+  cursor: "pointer"
+};
+
+const errorText = {
+  color: "red",
+  fontSize: "14px"
+};
+
+const successText = {
+  color: "green",
+  fontSize: "14px"
+};
+
+const link = {
+  color: "#6f8f6b",
+  cursor: "pointer"
+};
+
+const toggle = {
+  position: "absolute",
+  right: "10px",
+  top: "50%",
+  transform: "translateY(-50%)",
+  cursor: "pointer",
+  fontSize: "12px"
+};
