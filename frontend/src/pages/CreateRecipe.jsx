@@ -1,0 +1,308 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { createRecipe } from "../services/recipeService";
+
+const dietaryOptions = [
+  "Vegan",
+  "Vegetarian",
+  "Gluten-Free",
+  "Dairy-Free",
+  "High Protein",
+  "Quick Meals",
+  "Keto",
+  "Low Carb",
+  "Paleo",
+];
+
+export default function CreateRecipe() {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    cookingTimeMinutes: "",
+    servings: "",
+    ingredients: [""],
+    instructions: [""],
+    imageUrl: "",
+    cuisineType: "",
+    dietaryTags: [],
+  });
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user?.token) {
+      navigate("/signin");
+    }
+  }, [navigate]);
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  }
+
+  function handleListChange(type, index, value) {
+    const updated = [...form[type]];
+    updated[index] = value;
+    setForm({ ...form, [type]: updated });
+  }
+
+  function addField(type) {
+    setForm({ ...form, [type]: [...form[type], ""] });
+  }
+
+  function removeField(type, index) {
+    const updated = form[type].filter((_, i) => i !== index);
+    setForm({ ...form, [type]: updated.length ? updated : [""] });
+  }
+
+  function toggleDietaryTag(tag) {
+    const selected = form.dietaryTags.includes(tag);
+
+    setForm({
+      ...form,
+      dietaryTags: selected
+          ? form.dietaryTags.filter((item) => item !== tag)
+          : [...form.dietaryTags, tag],
+    });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user?.token) {
+      navigate("/signin");
+      return;
+    }
+
+    const recipeData = {
+      title: form.title,
+      description: form.description,
+      cookingTimeMinutes: Number(form.cookingTimeMinutes),
+      servings: Number(form.servings),
+      ingredients: form.ingredients.filter((item) => item.trim() !== ""),
+      preparationSteps: form.instructions
+          .filter((step) => step.trim() !== "")
+          .join("\n"),
+      cuisineType: form.cuisineType,
+      dietaryTag: form.dietaryTags.join(", "),
+      imageUrl: form.imageUrl,
+      authorUsername: user.username,
+    };
+
+    try {
+      await createRecipe(recipeData);
+      alert("Recipe created successfully!");
+      navigate("/recipes");
+    } catch (error) {
+      console.error(error);
+      alert("Could not create recipe.");
+    }
+  }
+
+  return (
+      <div className="bg-[var(--color-background)] text-[var(--color-text)] min-h-screen py-12 px-4">
+        <div className="max-w-3xl mx-auto bg-[var(--color-surface)] p-8 rounded-3xl shadow-sm border border-[var(--color-border)]">
+          <h1 className="text-3xl font-bold mb-6">Create Recipe</h1>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <input
+                type="text"
+                name="title"
+                placeholder="Recipe title"
+                value={form.title}
+                onChange={handleChange}
+                className="w-full p-3 rounded-xl border border-[var(--color-border)]"
+                required
+            />
+
+            <textarea
+                name="description"
+                placeholder="Description"
+                value={form.description}
+                onChange={handleChange}
+                className="w-full p-3 rounded-xl border border-[var(--color-border)]"
+                rows={4}
+                required
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                  type="number"
+                  name="cookingTimeMinutes"
+                  placeholder="Cooking time (min)"
+                  value={form.cookingTimeMinutes}
+                  onChange={handleChange}
+                  className="p-3 rounded-xl border border-[var(--color-border)]"
+                  required
+              />
+
+              <input
+                  type="number"
+                  name="servings"
+                  placeholder="Servings"
+                  value={form.servings}
+                  onChange={handleChange}
+                  className="p-3 rounded-xl border border-[var(--color-border)]"
+                  required
+              />
+            </div>
+
+            <section>
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="font-bold text-lg">Ingredients</h2>
+                <button
+                    type="button"
+                    onClick={() => addField("ingredients")}
+                    className="text-sm font-semibold text-[var(--color-primary)]"
+                >
+                  + Add Ingredient
+                </button>
+              </div>
+
+              {form.ingredients.map((ingredient, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <input
+                        value={ingredient}
+                        onChange={(e) =>
+                            handleListChange("ingredients", index, e.target.value)
+                        }
+                        placeholder={`Ingredient ${index + 1}`}
+                        className="w-full p-3 rounded-xl border border-[var(--color-border)]"
+                        required
+                    />
+
+                    <button
+                        type="button"
+                        onClick={() => removeField("ingredients", index)}
+                        className="px-3 rounded-xl border border-[var(--color-border)]"
+                    >
+                      ×
+                    </button>
+                  </div>
+              ))}
+            </section>
+
+            <section>
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="font-bold text-lg">Instructions</h2>
+                <button
+                    type="button"
+                    onClick={() => addField("instructions")}
+                    className="text-sm font-semibold text-[var(--color-primary)]"
+                >
+                  + Add Step
+                </button>
+              </div>
+
+              {form.instructions.map((step, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                <textarea
+                    value={step}
+                    onChange={(e) =>
+                        handleListChange("instructions", index, e.target.value)
+                    }
+                    placeholder={`Step ${index + 1}`}
+                    className="w-full p-3 rounded-xl border border-[var(--color-border)]"
+                    rows={2}
+                    required
+                />
+
+                    <button
+                        type="button"
+                        onClick={() => removeField("instructions", index)}
+                        className="px-3 rounded-xl border border-[var(--color-border)]"
+                    >
+                      ×
+                    </button>
+                  </div>
+              ))}
+            </section>
+
+            <div>
+              <label className="block mb-2 text-sm font-semibold">Cuisine</label>
+
+              <select
+                  name="cuisineType"
+                  value={form.cuisineType}
+                  onChange={handleChange}
+                  className="w-full p-3 rounded-xl border border-[var(--color-border)]"
+                  required
+              >
+                <option value="">Select cuisine</option>
+                <option value="Mediterranean">Mediterranean</option>
+                <option value="Asian">Asian</option>
+                <option value="American">American</option>
+                <option value="Mexican">Mexican</option>
+                <option value="Italian">Italian</option>
+                <option value="Indian">Indian</option>
+                <option value="Thai">Thai</option>
+                <option value="Japanese">Japanese</option>
+                <option value="French">French</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block mb-3 text-sm font-semibold">
+                Dietary Tags
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                {dietaryOptions.map((tag) => {
+                  const selected = form.dietaryTags.includes(tag);
+
+                  return (
+                      <button
+                          type="button"
+                          key={tag}
+                          onClick={() => toggleDietaryTag(tag)}
+                          className={`px-3 py-1 rounded-full text-sm font-semibold transition ${
+                              selected
+                                  ? "bg-[var(--color-primary)] text-white"
+                                  : "bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)]"
+                          }`}
+                      >
+                        {tag}
+                      </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="block mb-2 text-sm font-semibold">
+                Image URL
+              </label>
+
+              <input
+                  type="url"
+                  name="imageUrl"
+                  placeholder="https://example.com/image.jpg"
+                  value={form.imageUrl}
+                  onChange={handleChange}
+                  className="w-full p-3 rounded-xl border border-[var(--color-border)]"
+              />
+
+              {form.imageUrl && (
+                  <img
+                      src={form.imageUrl}
+                      alt="preview"
+                      className="mt-4 w-full h-60 object-cover rounded-xl"
+                  />
+              )}
+            </div>
+
+            <button
+                type="submit"
+                className="w-full bg-[var(--color-primary)] text-white py-3 rounded-xl font-semibold"
+            >
+              Create Recipe
+            </button>
+          </form>
+        </div>
+      </div>
+  );
+}
