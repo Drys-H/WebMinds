@@ -24,7 +24,7 @@ export default function AppRoutes() {
 
         {/* RECIPES */}
         <Route path="recipes" element={<AllRecipes />} />
-        <Route path="recipes/:recipeId" element={<RecipeDetails />} />
+        <Route path="recipes/:id" element={<RecipeDetails />} />
 
         {/* CREATE */}
         <Route path="create" element={<CreateRecipe />} />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Clock3,
@@ -15,10 +15,12 @@ import {
   addComment,
   addRecipeRating,
   getAverageRecipeRating,
+  saveRecipe,
 } from "../services/recipeService";
 
 export default function RecipeDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [recipe, setRecipe] = useState(null);
   const [comments, setComments] = useState([]);
@@ -75,27 +77,52 @@ export default function RecipeDetails() {
   }, [recipe]);
 
 
+  function getLoggedInUser() {
+    return JSON.parse(localStorage.getItem("user"));
+  }
+
+  function requireLogin() {
+    const user = getLoggedInUser();
+
+    if (!user?.username || !user?.token) {
+      navigate("/signin");
+      return null;
+    }
+
+    return user;
+  }
+
+  const handleSaveRecipe = async () => {
+    const user = requireLogin();
+    if (!user) return;
+
+    try {
+      await saveRecipe(user.username, id);
+      alert("Recipe saved to your profile.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not save recipe.");
+    }
+  };
+
+
 
   const handleShare = async () => {
     const url = window.location.href;
 
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: recipe?.title || "Recipe",
-          url,
-        });
-      } else {
-        await navigator.clipboard.writeText(url);
-        alert("Recipe link copied");
-      }
+      await navigator.clipboard.writeText(url);
+      alert("Recipe link copied!");
     } catch (error) {
-      console.error("Share failed:", error);
+      alert(url);
     }
   };
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
+
+    const user = requireLogin();
+    if (!user) return;
 
     if (!rating || !comment.trim()) {
       alert("Please add a rating and comment.");
@@ -103,32 +130,26 @@ export default function RecipeDetails() {
     }
 
     try {
-
-      await addRecipeRating(id, "Guest", rating);
-
+      await addRecipeRating(id, user.username, rating);
 
       const newComment = await addComment(id, {
         text: comment,
         rating,
-        authorUsername: "Guest",
+        authorUsername: user.username,
       });
 
-      // reload updated rating
       const updatedRating = await getAverageRecipeRating(id);
 
-      // update  immediately
       setComments((prev) => [newComment, ...prev]);
       setAverageRating(updatedRating);
-
-      // reset rating and comment
       setRating(0);
       setComment("");
-
     } catch (error) {
       console.error(error);
       alert("Could not submit review.");
     }
   };
+
 
   const title = recipe?.title || "Recipe title";
   const imageUrl =
@@ -184,6 +205,7 @@ export default function RecipeDetails() {
                 <div className="flex gap-2 sm:gap-3">
                   <button
                       type="button"
+                      onClick={handleSaveRecipe}
                       className="grid h-10 w-10 place-items-center rounded-xl bg-[#ff5a5f] text-white shadow-sm sm:h-11 sm:w-11"
                       aria-label="Save recipe"
                   >

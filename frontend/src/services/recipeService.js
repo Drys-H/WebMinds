@@ -86,3 +86,59 @@ export async function getAverageRecipeRating(recipeId) {
 
   return response.json();
 }
+
+function getAuthHeaders() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${user?.token}`,
+  };
+}
+
+export async function saveRecipe(username, recipeId) {
+  const response = await fetch(
+      `${API_BASE_URL}/users/${username}/saved-recipes/${recipeId}`,
+      {
+        method: "POST",
+        headers: getAuthHeaders(),
+      }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to save recipe");
+  }
+
+  return response.text();
+}
+
+export async function getSavedRecipes(username) {
+  const response = await fetch(
+      `${API_BASE_URL}/users/${username}/saved-recipes`,
+      {
+        headers: getAuthHeaders(),
+      }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch saved recipes");
+  }
+
+  return response.json();
+}
+
+export async function removeSavedRecipe(username, recipeId) {
+  const response = await fetch(
+      `${API_BASE_URL}/users/${username}/saved-recipes/${recipeId}`,
+      {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to remove saved recipe");
+  }
+
+  return response.text();
+}

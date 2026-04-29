@@ -2,6 +2,7 @@ import { Menu, Moon, Search, Sun, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 
+
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/recipes", label: "Recipes" },
@@ -89,11 +90,11 @@ export default function Layout() {
             </button>
 
             <button className="rounded-full border border-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white">
-              Sign In
+              <Link to="/signin">Sign In</Link>
             </button>
 
             <button className="rounded-full bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90">
-              Get Started
+              <Link to="/register">Get Started</Link>
             </button>
 
             <button className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300">

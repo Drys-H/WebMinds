@@ -41,8 +41,11 @@ export default function SignIn() {
 
       const data = await loginUser(form);
 
-      // OPTIONAL: store user locally (simple version)
-      localStorage.setItem("user", JSON.stringify(data));
+      // store logged in user locally
+      localStorage.setItem("user", JSON.stringify({
+        username: form.username,
+        token: data.token
+      }));
 
       navigate("/profile");
 
