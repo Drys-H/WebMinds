@@ -1,10 +1,12 @@
 package com.recipeapp.backend;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class ShoppingList {
 
     @Id
@@ -15,6 +17,7 @@ public class ShoppingList {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToMany
