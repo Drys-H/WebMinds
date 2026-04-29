@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================= LIGHT MODE (DEFAULT) ================= */
+:root {
+  --color-background: #f9fafb;   /* soft off-white */
+  --color-text: #111827;         /* dark grey text */
+  --color-surface: #ffffff;      /* cards / navbar */
+  --color-border: #e5e7eb;       /* subtle borders */
+
+  /* 🌿 BRAND COLOURS (PASTEL) */
+  --color-primary: #8fae8b;      /* pastel green */
+  --color-accent: #f4a261;       /* soft orange */
+}
+
+/* ================= DARK MODE ================= */
+.dark {
+  --color-background: #020617;
+  --color-text: #ffffff;
+  --color-surface: #0f172a;
+  --color-border: #1e293b;
+
+  --color-primary: #8fae8b; /* keep branding consistent */
+  --color-accent: #f4a261;
+}

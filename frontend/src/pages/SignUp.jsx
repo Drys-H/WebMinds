@@ -42,7 +42,7 @@ export default function SignUp() {
     return "";
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const validationError = validate();
@@ -55,33 +55,35 @@ export default function SignUp() {
     setSuccess("");
     setLoading(true);
 
-    fetch("http://localhost:8080/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        username: form.username,
-        password: form.password
-      })
-    })
-      .then(res => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then(() => {
-        setSuccess("Account created successfully 🎉");
-        setTimeout(() => navigate("/signin"), 1500);
-      })
-      .catch(() => {
-        setError("Something went wrong. Try again.");
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      const res = await fetch("http://localhost:8080/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          username: form.username,
+          password: form.password
+        })
       });
+
+      if (!res.ok) {
+        throw new Error("Signup failed");
+      }
+
+      setSuccess("Account created successfully 🎉");
+
+      // since backend doesn't return user → go to sign in
+      setTimeout(() => navigate("/signin"), 1200);
+
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

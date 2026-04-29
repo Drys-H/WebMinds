@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { loginUser } from "../services/api";
-import { setUser } from "../utils/auth";
 
 export default function SignIn() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    email: "",
+    username: "",
     password: ""
   });
 
@@ -32,7 +30,7 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.password) {
+    if (!form.username || !form.password) {
       setError("Please fill in all fields");
       return;
     }
@@ -43,7 +41,8 @@ export default function SignIn() {
 
       const data = await loginUser(form);
 
-      setUser(data);
+      // OPTIONAL: store user locally (simple version)
+      localStorage.setItem("user", JSON.stringify(data));
 
       navigate("/profile");
 
@@ -55,63 +54,54 @@ export default function SignIn() {
   };
 
   return (
-    <div>
-      <Navbar />
+      <div>
 
-      {/* DARK MODE TOGGLE */}
-      <div style={toggleWrap}>
-        <button onClick={() => setDarkMode(!darkMode)} style={toggleBtn}>
-          {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-        </button>
-      </div>
+        <div style={container}>
+          <div style={card}>
 
-      <div style={container}>
+            <h2 style={title}>Welcome Back</h2>
 
-        <div style={card}>
+            <p style={subtitle}>
+              Sign in to your Fit & Fresh account
+            </p>
 
-          <h2 style={title}>
-            Welcome Back
-          </h2>
+            {error && <p style={errorText}>{error}</p>}
 
-          <p style={subtitle}>
-            Sign in to your Fit & Fresh account
-          </p>
+            <form onSubmit={handleSubmit} style={formStyle}>
 
-          {error && <p style={errorText}>{error}</p>}
+              <input
+                  name="username"
+                  placeholder="Email address"
+                  value={form.username}
+                  onChange={handleChange}
+                  style={input}
+              />
 
-          <form onSubmit={handleSubmit} style={formStyle}>
+              <input
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={handleChange}
+                  style={input}
+              />
 
-            <input
-              name="email"
-              placeholder="Email address"
-              value={form.email}
-              onChange={handleChange}
-            />
+              <button style={signInBtn} disabled={loading}>
+                {loading ? "Signing in..." : "Sign In"}
+              </button>
 
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-            />
+            </form>
 
-            <button style={signInBtn} disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
-            </button>
-
-          </form>
-
-          <p style={bottomText}>
-            Don't have an account?{" "}
-            <span onClick={() => navigate("/signup")} style={link}>
+            <p style={bottomText}>
+              Don't have an account?{" "}
+              <span onClick={() => navigate("/register")} style={link}>
               Create one
             </span>
-          </p>
+            </p>
 
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
@@ -121,7 +111,8 @@ const container = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  height: "80vh"
+  minHeight: "100vh",
+  padding: "20px"
 };
 
 const card = {
@@ -130,7 +121,7 @@ const card = {
   borderRadius: "20px",
   background: "var(--surface)",
   textAlign: "center",
-  boxShadow: "0 8px 25px rgba(0,0,0,0.05)"
+  boxShadow: "0 10px 30px rgba(0,0,0,0.08)"
 };
 
 const title = {
@@ -149,9 +140,14 @@ const formStyle = {
 };
 
 const signInBtn = {
-  background: "var(--primary)",
+  background: "#e07a4f",
   color: "white",
-  marginTop: "10px"
+  marginTop: "10px",
+  padding: "12px",
+  borderRadius: "10px",
+  border: "none",
+  cursor: "pointer",
+  fontWeight: "600"
 };
 
 const errorText = {
@@ -180,3 +176,15 @@ const toggleBtn = {
   background: "var(--surface)",
   border: "1px solid var(--border)"
 };
+
+const input = {
+  padding: "12px",
+  borderRadius: "10px",
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+  color: "var(--text)",
+  outline: "none"
+};
+
+
+

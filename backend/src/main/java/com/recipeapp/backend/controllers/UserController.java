@@ -1,6 +1,5 @@
 package com.recipeapp.backend.controllers;
 
-import com.recipeapp.backend.ShoppingList;
 import com.recipeapp.backend.dto.AuthResponseDTO;
 import com.recipeapp.backend.dto.LoginRequestDTO;
 import com.recipeapp.backend.dto.RecipeDTO;
@@ -9,13 +8,13 @@ import com.recipeapp.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-
-import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+//@CrossOrigin(origins = "http://localhost:5173", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class UserController {
 
     private final UserService userService;
@@ -55,19 +54,5 @@ public class UserController {
     public ResponseEntity<List<RecipeDTO>> getSavedRecipes(@PathVariable String username) {
         List<RecipeDTO> savedRecipes = userService.getSavedRecipes(username);
         return ResponseEntity.ok(savedRecipes);
-    }
-
-    @PostMapping("/{username}/shopping-lists/recipe/{recipeId}")
-    public ResponseEntity<String> addRecipeToShoppingList(@PathVariable String username, @PathVariable Long recipeId, Principal principal) {
-
-        userService.addRecipeIngredientsToShoppingList(username, recipeId, principal.getName());
-        return ResponseEntity.ok("New shopping list created successfully!");
-    }
-
-    @GetMapping("/{username}/shopping-lists")
-    public ResponseEntity<List<ShoppingList>> getShoppingLists(@PathVariable String username, Principal principal) {
-
-        List<ShoppingList> lists = userService.getShoppingLists(username, principal.getName());
-        return ResponseEntity.ok(lists);
     }
 }

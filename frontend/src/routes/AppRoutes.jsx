@@ -10,34 +10,36 @@ import Categories from "../pages/Categories";
 import Community from "../pages/Community";
 import Profile from "../pages/Profile";
 import CreateRecipe from "../pages/CreateRecipe";
-import ShoppingList from "../pages/ShoppingList";
 
 export default function AppRoutes() {
   return (
-      <Routes>
+    <Routes>
+      <Route path="/" element={<Layout />}>
 
-        <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
 
-          <Route index element={<Home />} />
-          <Route path="signin" element={<SignIn />} />
-          <Route path="signup" element={<SignUp />} />
+        {/* AUTH */}
+        <Route path="signin" element={<SignIn />} />
+        <Route path="register" element={<SignUp />} />
 
-          <Route path="recipes" element={<AllRecipes />} />
-          <Route path="recipes/:recipeId" element={<RecipeDetails />} />
+        {/* RECIPES */}
+        <Route path="recipes" element={<AllRecipes />} />
+        <Route path="recipes/:recipeId" element={<RecipeDetails />} />
 
-          <Route path="categories" element={<Categories />} />
-          <Route path="community" element={<Community />} />
+        {/* CREATE */}
+        <Route path="create" element={<CreateRecipe />} />
 
-          <Route path="profile" element={<Profile />} />
-          <Route path="profile/shopping-list" element={<ShoppingList />} />
+        {/* OTHER */}
+        <Route path="categories" element={<Categories />} />
+        <Route path="community" element={<Community />} />
 
-          <Route path="create" element={<CreateRecipe />} />
+        {/* PROFILE */}
+        <Route path="profile" element={<Profile />} />
 
-          {/* fallback */}
-          <Route path="*" element={<Home />} />
+        {/* FALLBACK */}
+        <Route path="*" element={<Home />} />
 
-        </Route>
-
-      </Routes>
+      </Route>
+    </Routes>
   );
 }

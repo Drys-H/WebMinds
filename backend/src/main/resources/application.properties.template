@@ -1,0 +1,5 @@
+spring.datasource.url= # YOUR DB URL HERE
+spring.datasource.username= # YOUR USERNAME
+spring.datasource.password= # YOUR PASSWORD
+spring.jpa.hibernate.ddl-auto=update
+jwt.secret=your_super_long_random_secret_key_here_that_is_at_least_32_characters

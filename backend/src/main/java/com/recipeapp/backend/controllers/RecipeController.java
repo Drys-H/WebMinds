@@ -7,11 +7,15 @@ import com.recipeapp.backend.service.CommentService;
 import com.recipeapp.backend.service.RecipeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/recipes")
+//@CrossOrigin(origins = "http://localhost:5173", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class RecipeController {
 
     private final RecipeService recipeService;
