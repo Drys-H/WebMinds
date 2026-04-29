@@ -142,3 +142,19 @@ export async function removeSavedRecipe(username, recipeId) {
 
   return response.text();
 }
+
+export async function createRecipe(recipeData) {
+  const response = await fetch(`${API_BASE_URL}/recipes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(recipeData),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create recipe");
+  }
+
+  return response.json();
+}

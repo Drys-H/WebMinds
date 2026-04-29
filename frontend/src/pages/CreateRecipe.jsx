@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createRecipe } from "../services/recipeService";
 
 export default function CreateRecipe() {
   const navigate = useNavigate();
@@ -42,26 +43,36 @@ export default function CreateRecipe() {
     setForm({ ...form, [type]: updated.length ? updated : [""] });
   }
 
-  function handleImage(e) {
-    const file = e.target.files[0];
-    if (file) {
-      setForm({ ...form, image: URL.createObjectURL(file) });
-    }
-  }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user?.token) {
+      navigate("/signin");
+      return;
+    }
+
     const recipeData = {
-      ...form,
+      title: form.title,
+      description: form.description,
       cookingTimeMinutes: Number(form.cookingTimeMinutes),
       servings: Number(form.servings),
-      ingredients: form.ingredients.filter(Boolean),
-      instructions: form.instructions.filter(Boolean),
+      ingredients: form.ingredients.filter(Boolean).join(", "),
+      preparationSteps: form.instructions.filter(Boolean).join("\n"),
+      imageUrl: form.imageUrl,
+      authorUsername: user.username,
     };
 
-    console.log(recipeData);
-    alert("Recipe created (frontend only)");
+    try {
+      await createRecipe(recipeData);
+      alert("Recipe created successfully!");
+      navigate("/recipes");
+    } catch (error) {
+      console.error(error);
+      alert("Could not create recipe.");
+    }
   }
 
   return (
@@ -183,14 +194,21 @@ export default function CreateRecipe() {
 
             <div>
               <label className="block mb-2 text-sm font-semibold">
-                Upload Image
+                Image URL
               </label>
 
-              <input type="file" onChange={handleImage} />
+              <input
+                  type="url"
+                  name="imageUrl"
+                  placeholder="https://example.com/image.jpg"
+                  value={form.imageUrl}
+                  onChange={handleChange}
+                  className="w-full p-3 rounded-xl border border-[var(--color-border)]"
+              />
 
-              {form.image && (
+              {form.imageUrl && (
                   <img
-                      src={form.image}
+                      src={form.imageUrl}
                       alt="preview"
                       className="mt-4 w-full h-60 object-cover rounded-xl"
                   />
