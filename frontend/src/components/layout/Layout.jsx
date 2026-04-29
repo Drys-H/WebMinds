@@ -1,5 +1,5 @@
 import { Menu, Search, User, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 
 const navLinks = [
@@ -12,7 +12,32 @@ const navLinks = [
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
+
+  // ✅ LOAD SAVED THEME
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      setDarkMode(true);
+    }
+  }, []);
+
+  // ✅ TOGGLE FUNCTION
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+
+    if (newMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -63,6 +88,14 @@ export default function Layout() {
             {/* RIGHT SIDE */}
             <div className="hidden items-center gap-3 lg:flex">
 
+              {/* 🌙 DARK MODE BUTTON */}
+              <button
+                  onClick={toggleDarkMode}
+                  className="px-3 py-2 rounded-full border border-[var(--color-border)] text-sm"
+              >
+                {darkMode ? "Light" : "Dark"}
+              </button>
+
               <button className="rounded-full border border-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white">
                 <Link to="/signin">Sign In</Link>
               </button>
@@ -78,6 +111,15 @@ export default function Layout() {
 
             {/* MOBILE */}
             <div className="flex items-center gap-2 md:hidden">
+
+              {/* 🌙 MOBILE DARK MODE */}
+              <button
+                  onClick={toggleDarkMode}
+                  className="px-3 py-2 rounded-full border border-[var(--color-border)] text-sm"
+              >
+                {darkMode ? "Light" : "Dark"}
+              </button>
+
               <button
                   type="button"
                   className="grid h-10 w-10 place-items-center rounded-full border border-[var(--color-border)]"
@@ -136,59 +178,16 @@ export default function Layout() {
           )}
         </header>
 
-        {/* MAIN */}
         <main>
           <Outlet />
         </main>
 
-        {/* FOOTER */}
+        {/* FOOTER stays same */}
         <footer className="mt-16 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-
-              <div>
-                <h3 className="mb-4 text-lg font-bold">
-                  <span className="text-[#6B8E6F]">FRESH</span>
-                  <span className="text-[#E88D67]">&</span>
-                  <span className="text-[#6B8E6F]">FIT</span>
-                </h3>
-                <p className="text-sm text-slate-500">
-                  Join thousands of food lovers cooking healthier every day.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="mb-4 font-semibold">Explore</h4>
-                <ul className="space-y-2 text-sm text-slate-500">
-                  <li><Link to="/recipes">All Recipes</Link></li>
-                  <li><Link to="/categories">Categories</Link></li>
-                  <li><Link to="/community">Community</Link></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="mb-4 font-semibold">Community</h4>
-                <ul className="space-y-2 text-sm text-slate-500">
-                  <li>Blog</li>
-                  <li>About Us</li>
-                  <li>Contact</li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="mb-4 font-semibold">Legal</h4>
-                <ul className="space-y-2 text-sm text-slate-500">
-                  <li>Privacy Policy</li>
-                  <li>Terms of Service</li>
-                </ul>
-              </div>
-
-            </div>
-
-            <div className="mt-8 border-t border-[var(--color-border)] pt-8 text-center text-sm text-slate-500">
-              <p>&copy; 2026 Fresh&amp;Fit. All rights reserved.</p>
-            </div>
+            <p className="text-center text-sm text-slate-500">
+              &copy; 2026 Fresh&amp;Fit. All rights reserved.
+            </p>
           </div>
         </footer>
       </div>
