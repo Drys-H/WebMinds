@@ -477,15 +477,14 @@ export default function RecipeDetails() {
                 </h3>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {dietaryTag ? (
-                      <span className="rounded-full bg-[var(--color-primary)]/10 px-3 py-2 text-sm font-semibold text-[var(--color-primary)]">
-                    {dietaryTag}
-                  </span>
-                  ) : (
-                      <p className="text-sm text-[var(--color-text-muted)]">
-                        No dietary tag added.
-                      </p>
-                  )}
+                  {dietaryTag.split(",").map((tag) => (
+                    <span
+                      key={[tag]}
+                      className="rounded-full bg-[var(--color-primary)]/10 px-3 py-1 text-sm font-semibold text-[var(--color-primary)]"
+                    >
+                      {tag.trim()}
+                    </span>
+                  ))}
                 </div>
               </div>
             </aside>

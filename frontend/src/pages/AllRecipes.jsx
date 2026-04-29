@@ -5,9 +5,9 @@ import { getAllRecipes, searchRecipes, saveRecipe } from "../services/recipeServ
 import RecipeCard from "../components/RecipeCard";
 
 const filters = {
-  diet: ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free"],
-  cookTime: ["Under 20 min", "20-40 min", "Over 40 min"],
-  cuisine: ["Mediterranean", "Asian", "American", "Mexican"],
+  diet: ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "High Protein","Quick Meals","Keto","Low Carb","Paleo"],
+  cookTime: [  "Under 15 min", "15-30 min", "30-45 min", "45-60 min", "Over 1 hour",],
+  cuisine: ["Mediterranean", "Asian", "American", "Mexican", "Italian", "Indian","Thai","Japanese","French"],
 };
 
 const sortOptions = ["Newest", "Most Popular", "Quick First"];

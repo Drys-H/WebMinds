@@ -2,6 +2,18 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createRecipe } from "../services/recipeService";
 
+const dietaryOptions = [
+  "Vegan",
+  "Vegetarian",
+  "Gluten-Free",
+  "Dairy-Free",
+  "High Protein",
+  "Quick Meals",
+  "Keto",
+  "Low Carb",
+  "Paleo",
+];
+
 export default function CreateRecipe() {
   const navigate = useNavigate();
 
@@ -14,7 +26,7 @@ export default function CreateRecipe() {
     instructions: [""],
     imageUrl: "",
     cuisineType: "",
-    dietaryTag: "",
+    dietaryTags: [],
   });
 
   useEffect(() => {
@@ -45,6 +57,16 @@ export default function CreateRecipe() {
     setForm({ ...form, [type]: updated.length ? updated : [""] });
   }
 
+  function toggleDietaryTag(tag) {
+    const selected = form.dietaryTags.includes(tag);
+
+    setForm({
+      ...form,
+      dietaryTags: selected
+          ? form.dietaryTags.filter((item) => item !== tag)
+          : [...form.dietaryTags, tag],
+    });
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -66,7 +88,7 @@ export default function CreateRecipe() {
           .filter((step) => step.trim() !== "")
           .join("\n"),
       cuisineType: form.cuisineType,
-      dietaryTag: form.dietaryTag,
+      dietaryTag: form.dietaryTags.join(", "),
       imageUrl: form.imageUrl,
       authorUsername: user.username,
     };
@@ -115,6 +137,7 @@ export default function CreateRecipe() {
                   value={form.cookingTimeMinutes}
                   onChange={handleChange}
                   className="p-3 rounded-xl border border-[var(--color-border)]"
+                  required
               />
 
               <input
@@ -124,6 +147,7 @@ export default function CreateRecipe() {
                   value={form.servings}
                   onChange={handleChange}
                   className="p-3 rounded-xl border border-[var(--color-border)]"
+                  required
               />
             </div>
 
@@ -198,12 +222,14 @@ export default function CreateRecipe() {
               ))}
             </section>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2 text-sm font-semibold">Cuisine</label>
+
               <select
                   name="cuisineType"
                   value={form.cuisineType}
                   onChange={handleChange}
-                  className="p-3 rounded-xl border border-[var(--color-border)]"
+                  className="w-full p-3 rounded-xl border border-[var(--color-border)]"
                   required
               >
                 <option value="">Select cuisine</option>
@@ -211,21 +237,39 @@ export default function CreateRecipe() {
                 <option value="Asian">Asian</option>
                 <option value="American">American</option>
                 <option value="Mexican">Mexican</option>
+                <option value="Italian">Italian</option>
+                <option value="Indian">Indian</option>
+                <option value="Thai">Thai</option>
+                <option value="Japanese">Japanese</option>
+                <option value="French">French</option>
               </select>
+            </div>
 
-              <select
-                  name="dietaryTag"
-                  value={form.dietaryTag}
-                  onChange={handleChange}
-                  className="p-3 rounded-xl border border-[var(--color-border)]"
-                  required
-              >
-                <option value="">Select dietary tag</option>
-                <option value="Vegan">Vegan</option>
-                <option value="Vegetarian">Vegetarian</option>
-                <option value="Gluten-Free">Gluten-Free</option>
-                <option value="Dairy-Free">Dairy-Free</option>
-              </select>
+            <div>
+              <label className="block mb-3 text-sm font-semibold">
+                Dietary Tags
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                {dietaryOptions.map((tag) => {
+                  const selected = form.dietaryTags.includes(tag);
+
+                  return (
+                      <button
+                          type="button"
+                          key={tag}
+                          onClick={() => toggleDietaryTag(tag)}
+                          className={`px-3 py-1 rounded-full text-sm font-semibold transition ${
+                              selected
+                                  ? "bg-[var(--color-primary)] text-white"
+                                  : "bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)]"
+                          }`}
+                      >
+                        {tag}
+                      </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div>
