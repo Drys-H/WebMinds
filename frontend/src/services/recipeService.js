@@ -1,5 +1,7 @@
 const API_BASE_URL = "http://localhost:8080/api";
 
+/* ================= RECIPES ================= */
+
 export async function getAllRecipes() {
   const response = await fetch(`${API_BASE_URL}/recipes`);
 
@@ -32,6 +34,8 @@ export async function searchRecipes(keyword) {
   return response.json();
 }
 
+/* ================= COMMENTS ================= */
+
 export async function getCommentsForRecipe(recipeId) {
   const response = await fetch(`${API_BASE_URL}/recipes/${recipeId}/comments`);
 
@@ -58,11 +62,15 @@ export async function addComment(recipeId, commentData) {
   return response.json();
 }
 
+/* ================= RATINGS ================= */
+
 export async function addRecipeRating(recipeId, username, score) {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const response = await fetch(
-      `${API_BASE_URL}/recipes/${recipeId}/ratings?username=${encodeURIComponent(username)}&score=${score}`,
+      `${API_BASE_URL}/recipes/${recipeId}/ratings?username=${encodeURIComponent(
+          username
+      )}&score=${score}`,
       {
         method: "POST",
         headers: {
@@ -87,6 +95,8 @@ export async function getAverageRecipeRating(recipeId) {
   return response.json();
 }
 
+/* ================= AUTH HELPERS ================= */
+
 function getAuthHeaders() {
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -95,6 +105,19 @@ function getAuthHeaders() {
     Authorization: `Bearer ${user?.token}`,
   };
 }
+
+function handleAuthError(response) {
+  if (response.status === 401 || response.status === 403) {
+    localStorage.removeItem("user");
+    alert("Session expired. Please sign in again.");
+    window.location.href = "/signin";
+    return true;
+  }
+
+  return false;
+}
+
+/* ================= SAVED RECIPES ================= */
 
 export async function saveRecipe(username, recipeId) {
   const response = await fetch(
@@ -143,18 +166,56 @@ export async function removeSavedRecipe(username, recipeId) {
   return response.text();
 }
 
+/* ================= SHOPPING LIST (NEW ✅) ================= */
 
+// ➕ ADD RECIPE INGREDIENTS TO SHOPPING LIST
+export async function addRecipeToShoppingList(username, recipeId) {
+  const user = JSON.parse(localStorage.getItem("user"));
 
-function handleAuthError(response) {
-  if (response.status === 401 || response.status === 403) {
-    localStorage.removeItem("user");
-    alert("Session expired. Please sign in again.");
-    window.location.href = "/signin";
-    return true;
+  const response = await fetch(
+      `${API_BASE_URL}/users/${username}/shopping-lists/recipe/${recipeId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      }
+  );
+
+  if (handleAuthError(response)) return;
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error("Shopping list error:", text);
+    throw new Error("Failed to add recipe to shopping list");
   }
 
-  return false;
+  return response.text();
 }
+
+// ➕ GET SHOPPING LIST
+export async function getShoppingLists(username) {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const response = await fetch(
+      `${API_BASE_URL}/users/${username}/shopping-lists`,
+      {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      }
+  );
+
+  if (handleAuthError(response)) return [];
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch shopping list");
+  }
+
+  return response.json();
+}
+
+/* ================= CREATE / UPDATE ================= */
 
 export async function createRecipe(recipeData) {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -180,7 +241,7 @@ export async function createRecipe(recipeData) {
 export async function updateRecipe(id, recipeData) {
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const response = await fetch(`http://localhost:8080/api/recipes/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/recipes/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

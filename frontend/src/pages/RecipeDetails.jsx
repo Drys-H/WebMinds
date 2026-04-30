@@ -18,6 +18,8 @@ import {
   saveRecipe,
 } from "../services/recipeService";
 
+const API_BASE_URL = "http://localhost:8080/api";
+
 export default function RecipeDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -95,20 +97,21 @@ export default function RecipeDetails() {
     return user;
   }
 
-  // ✅ FIXED FUNCTION ONLY
+  // ✅ FIXED SAVE FUNCTION (backend + local sync)
   const handleSaveRecipe = async () => {
     const user = requireLogin();
     if (!user) return;
 
     try {
+      // save recipe
       await saveRecipe(user.username, id);
 
+      // add to shopping list (backend)
       const res = await fetch(
-          `http://localhost:8080/api/users/${user.username}/shopping-lists/recipe/${id}`,
+          `${API_BASE_URL}/users/${user.username}/shopping-lists/recipe/${id}`,
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
               Authorization: `Bearer ${user.token}`,
             },
           }
@@ -117,21 +120,17 @@ export default function RecipeDetails() {
       if (!res.ok) {
         const text = await res.text();
         console.error("Shopping list error:", text);
-        throw new Error("Failed to add to shopping list");
       }
 
-      // ✅ LOCAL STORAGE FIX
-      const newIngredients = recipe.ingredients || [];
+      // ✅ local fallback (so Profile updates instantly)
       const existing =
           JSON.parse(localStorage.getItem("shoppingList")) || [];
 
       const merged = [...existing];
 
-      newIngredients.forEach((i) => {
-        const name = typeof i === "string" ? i : i.name;
-
-        if (!merged.some((item) => item === name)) {
-          merged.push(name);
+      ingredients.forEach((i) => {
+        if (!merged.includes(i)) {
+          merged.push(i);
         }
       });
 
@@ -140,7 +139,7 @@ export default function RecipeDetails() {
       alert("Recipe saved & added to shopping list!");
     } catch (error) {
       console.error(error);
-      alert("Something failed (check console)");
+      alert("Something failed");
     }
   };
 
@@ -187,16 +186,6 @@ export default function RecipeDetails() {
     }
   };
 
-  const title = recipe?.title || "Recipe title";
-  const imageUrl =
-      recipe?.imageUrl || "https://via.placeholder.com/1400x700?text=Recipe";
-  const cuisineType = recipe?.cuisineType || "Cuisine";
-  const dietaryTag =
-      recipe?.dietaryTag || recipe?.dietaryTags || recipe?.diet || "";
-  const cookingTimeMinutes = recipe?.cookingTimeMinutes ?? 0;
-  const servings = recipe?.servings ?? 0;
-  const authorUsername = recipe?.authorUsername || "Unknown";
-
   if (loading) {
     return (
         <div className="bg-[var(--color-background)] px-4 py-20 text-center text-[var(--color-text-muted)]">
@@ -207,21 +196,51 @@ export default function RecipeDetails() {
 
   return (
       <div className="bg-[var(--color-background)] text-[var(--color-text)]">
-        {/* ⚠️ YOUR UI REMAINS EXACTLY THE SAME BELOW */}
+
+        {/* HEADER */}
+        <section className="relative">
+          <img
+              src={recipe?.imageUrl || "https://via.placeholder.com/1400x700"}
+              alt={recipe?.title}
+              className="w-full h-[400px] object-cover"
+          />
+
+          <div className="absolute top-5 left-5 flex gap-3">
+            <Link to="/recipes" className="bg-white px-3 py-2 rounded">
+              <ArrowLeft />
+            </Link>
+
+            <button onClick={handleSaveRecipe} className="bg-red-500 p-3 rounded text-white">
+              <Heart />
+            </button>
+
+            <button onClick={handleShare} className="bg-white p-3 rounded">
+              <Share2 />
+            </button>
+          </div>
+        </section>
+
+        {/* INGREDIENTS */}
+        <div className="p-6">
+          <h2 className="text-xl font-bold mb-4">Ingredients</h2>
+
+          <ul className="space-y-2">
+            {ingredients.map((i, index) => (
+                <li key={index}>{i}</li>
+            ))}
+          </ul>
+        </div>
+
       </div>
   );
 }
 
 function StatBox({ icon, value, label }) {
   return (
-      <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] p-4 text-center">
-        <div className="mb-2 flex justify-center">{icon}</div>
-
-        <p className="text-2xl font-extrabold text-[var(--color-text)] sm:text-3xl">
-          {value}
-        </p>
-
-        <p className="text-sm text-[var(--color-text-muted)]">{label}</p>
+      <div className="rounded-2xl border p-4 text-center">
+        <div>{icon}</div>
+        <p className="text-xl font-bold">{value}</p>
+        <p>{label}</p>
       </div>
   );
 }

@@ -1,31 +1,16 @@
-const BASE_URL = "http://localhost:8080/api/users";
+const API_BASE_URL = "http://localhost:8080/api";
 
-// GET shopping lists
-export async function getShoppingLists(username, token) {
-    const res = await fetch(`${BASE_URL}/${username}/shopping-lists`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    if (!res.ok) throw new Error("Failed to fetch shopping lists");
-
-    return res.json();
-}
-
-// ✅ ADD THIS (this is what your error is about)
-export async function addToShoppingList(username, recipeId, token) {
-    const res = await fetch(
-        `${BASE_URL}/${username}/shopping-lists/recipe/${recipeId}`,
+export async function getShoppingList(username, token) {
+    const response = await fetch(
+        `${API_BASE_URL}/users/${username}/shopping-lists`,
         {
-            method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         }
     );
 
-    if (!res.ok) throw new Error("Failed to add to shopping list");
+    if (!response.ok) throw new Error("Failed to fetch shopping list");
 
-    return res.text();
+    return response.json();
 }
