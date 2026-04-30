@@ -16,6 +16,7 @@ import {
   addRecipeRating,
   getAverageRecipeRating,
   saveRecipe,
+  addRecipeToShoppingList,
 } from "../services/recipeService";
 
 export default function RecipeDetails() {
@@ -158,6 +159,19 @@ export default function RecipeDetails() {
       }
 
       alert("Ingredients added to shopping list!");
+    } catch (error) {
+      console.error(error);
+      alert("Could not add to shopping list.");
+    }
+  }
+
+  async function handleAddToShoppingList() {
+    const user = requireLogin();
+    if (!user) return;
+
+    try {
+      await addRecipeToShoppingList(user.username, id);
+      alert("Ingredients added to shopping list.");
     } catch (error) {
       console.error(error);
       alert("Could not add to shopping list.");

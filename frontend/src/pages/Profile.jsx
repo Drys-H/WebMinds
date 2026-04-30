@@ -56,8 +56,7 @@ export default function Profile() {
     async function loadShoppingList() {
       try {
         const data = await getShoppingLists(
-            savedUser.username,
-            savedUser.token
+            savedUser.username
         );
 
         // flatten ingredients
