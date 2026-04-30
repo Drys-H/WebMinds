@@ -121,60 +121,48 @@ export default function RecipeDetails() {
   };
 
   async function handleAddToShoppingList() {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = requireLogin();
+    if (!user) return;
 
-    if (!user?.token) {
-      navigate("/signin");
+    try {
+      await addRecipeToShoppingList(user.username, id);
+      alert("Ingredients added to shopping list.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not add to shopping list.");
+    }
+  }
+
+  async function handleSubmitReview(e) {
+    e.preventDefault();
+
+    const user = requireLogin();
+    if (!user) return;
+
+    if (!rating) {
+      alert("Please select a rating.");
       return;
     }
 
     try {
-      await addRecipeToShoppingList(user.username, id);
-      alert("Ingredients added to shopping list.");
-    } catch (error) {
-      console.error(error);
-      alert("Could not add to shopping list.");
-    }
-  }
+      await addRecipeRating(user.username, id, rating);
 
-  async function handleAddToShoppingList() {
-    const user = requireLogin();
-    if (!user) return;
-
-    try {
-      const res = await fetch(
-          `http://localhost:8080/api/users/${user.username}/shopping-lists/recipe/${id}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-      );
-
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("Shopping list error:", text);
-        throw new Error();
+      if (comment.trim()) {
+        await addComment(user.username, id, comment.trim());
       }
 
-      alert("Ingredients added to shopping list!");
+      const updatedComments = await getCommentsForRecipe(id);
+      const updatedRating = await getAverageRecipeRating(id);
+
+      setComments(Array.isArray(updatedComments) ? updatedComments : []);
+      setAverageRating(updatedRating);
+      setRating(0);
+      setComment("");
+
+      alert("Review submitted.");
     } catch (error) {
       console.error(error);
-      alert("Could not add to shopping list.");
-    }
-  }
-
-  async function handleAddToShoppingList() {
-    const user = requireLogin();
-    if (!user) return;
-
-    try {
-      await addRecipeToShoppingList(user.username, id);
-      alert("Ingredients added to shopping list.");
-    } catch (error) {
-      console.error(error);
-      alert("Could not add to shopping list.");
+      alert("Could not submit review.");
     }
   }
 
