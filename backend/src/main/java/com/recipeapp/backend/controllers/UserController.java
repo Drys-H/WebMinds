@@ -65,7 +65,13 @@ public class UserController {
     }
 
     @GetMapping("/{username}/shopping-lists")
-    public ResponseEntity<List<ShoppingList>> getShoppingLists(@PathVariable String username, Principal principal) {
+    public ResponseEntity<List<ShoppingList>> getShoppingLists(
+            @PathVariable String username,
+            Principal principal
+    ) {
+
+        System.out.println("URL username: " + username);
+        System.out.println("TOKEN username: " + principal.getName());
 
         List<ShoppingList> lists = userService.getShoppingLists(username, principal.getName());
         return ResponseEntity.ok(lists);

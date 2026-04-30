@@ -176,3 +176,22 @@ export async function createRecipe(recipeData) {
 
   return response.json();
 }
+
+export async function updateRecipe(id, recipeData) {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const response = await fetch(`http://localhost:8080/api/recipes/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+    body: JSON.stringify(recipeData),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update recipe");
+  }
+
+  return await response.json();
+}

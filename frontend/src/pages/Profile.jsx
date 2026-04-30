@@ -1,16 +1,37 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getSavedRecipes, removeSavedRecipe, getAllRecipes } from "../services/recipeService";
+import {
+  getSavedRecipes,
+  removeSavedRecipe,
+  getAllRecipes
+} from "../services/recipeService";
 
 export default function Profile() {
   const navigate = useNavigate();
-
 
   const [myRecipes, setMyRecipes] = useState([]);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("recipes");
   const [savedRecipes, setSavedRecipes] = useState([]);
+
+  // ✅ NEW shopping list state
   const [shoppingList, setShoppingList] = useState([]);
+  const [completedItems, setCompletedItems] = useState({});
+  const [quantities, setQuantities] = useState({});
+
+  // LOAD LOCAL STORAGE
+  useEffect(() => {
+    setCompletedItems(JSON.parse(localStorage.getItem("completed")) || {});
+    setQuantities(JSON.parse(localStorage.getItem("quantities")) || {});
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("completed", JSON.stringify(completedItems));
+  }, [completedItems]);
+
+  useEffect(() => {
+    localStorage.setItem("quantities", JSON.stringify(quantities));
+  }, [quantities]);
 
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
@@ -31,6 +52,7 @@ export default function Profile() {
 
     loadMyRecipes();
 
+    // ✅ keep local shopping list (safe fallback)
     const list = JSON.parse(localStorage.getItem("shoppingList")) || [];
     setShoppingList(list);
 
@@ -45,6 +67,44 @@ export default function Profile() {
 
     loadSavedRecipes();
   }, [navigate]);
+
+  // =========================
+  // SHOPPING LIST FUNCTIONS
+  // =========================
+
+  const toggleComplete = (index) => {
+    setCompletedItems(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const updateQuantity = (index, value) => {
+    setQuantities(prev => ({
+      ...prev,
+      [index]: value
+    }));
+  };
+
+  const removeItem = (index) => {
+    setShoppingList(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearCompleted = () => {
+    setShoppingList(prev =>
+        prev.filter((_, i) => !completedItems[i])
+    );
+  };
+
+  const markAllComplete = () => {
+    const all = {};
+    shoppingList.forEach((_, i) => {
+      all[i] = true;
+    });
+    setCompletedItems(all);
+  };
+
+  // =========================
 
   const handleRemoveSaved = async (recipeId) => {
     try {
@@ -66,6 +126,7 @@ export default function Profile() {
   return (
       <div className="bg-[var(--color-background)] text-[var(--color-text)] min-h-screen">
 
+        {/* HEADER */}
         <div className="bg-[var(--color-primary)] text-white py-12">
           <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
 
@@ -99,8 +160,10 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* BODY */}
         <div className="max-w-6xl mx-auto px-4 py-10">
 
+          {/* TABS */}
           <div className="flex gap-3 mb-8">
             <Tab active={activeTab === "recipes"} onClick={() => setActiveTab("recipes")}>
               My Recipes
@@ -115,6 +178,61 @@ export default function Profile() {
             </Tab>
           </div>
 
+          {/* ================= SHOPPING LIST ================= */}
+          {activeTab === "shopping" && (
+              shoppingList.length === 0 ? (
+                  <EmptyState
+                      title="Shopping list is empty"
+                      text="Save recipes to auto-add ingredients."
+                  />
+              ) : (
+                  <div className="bg-[var(--color-surface)] p-6 rounded-2xl border">
+
+                    <div className="flex justify-between mb-4">
+                      <h2 className="text-lg font-bold">
+                        Shopping List ({shoppingList.length} items)
+                      </h2>
+
+                      <div className="flex gap-3 text-sm">
+                        <button onClick={clearCompleted}>Clear completed</button>
+                        <button onClick={markAllComplete}>Mark all complete</button>
+                      </div>
+                    </div>
+
+                    <ul className="space-y-3">
+                      {shoppingList.map((item, index) => (
+                          <li
+                              key={index}
+                              className="flex items-center gap-3 border p-3 rounded-xl"
+                          >
+                            <input
+                                type="checkbox"
+                                checked={completedItems[index] || false}
+                                onChange={() => toggleComplete(index)}
+                            />
+
+                            <span className={completedItems[index] ? "line-through" : ""}>
+                      {item}
+                    </span>
+
+                            <input
+                                type="number"
+                                placeholder="Qty"
+                                value={quantities[index] || ""}
+                                onChange={(e) => updateQuantity(index, e.target.value)}
+                                className="w-16 border rounded px-2"
+                            />
+
+                            <button onClick={() => removeItem(index)}>❌</button>
+                          </li>
+                      ))}
+                    </ul>
+                  </div>
+              )
+          )}
+
+          {/* KEEP YOUR ORIGINAL TABS BELOW (UNCHANGED) */}
+
           {activeTab === "recipes" && (
               myRecipes.length === 0 ? (
                   <EmptyState
@@ -127,10 +245,7 @@ export default function Profile() {
                   <div className="grid gap-6 md:grid-cols-2">
                     {myRecipes.map((recipe) => (
                         <Link key={recipe.id} to={`/recipes/${recipe.id}`}>
-                          <SavedRecipeCard
-                              recipe={recipe}
-                              onRemove={null}
-                          />
+                          <SavedRecipeCard recipe={recipe} />
                         </Link>
                     ))}
                   </div>
@@ -157,29 +272,12 @@ export default function Profile() {
               )
           )}
 
-          {activeTab === "shopping" && (
-              shoppingList.length === 0 ? (
-                  <EmptyState
-                      title="Shopping list is empty"
-                      text="Shopping list backend connection will be added later."
-                  />
-              ) : (
-                  <ul className="space-y-3">
-                    {shoppingList.map((item, index) => (
-                        <li
-                            key={index}
-                            className="bg-[var(--color-surface)] p-4 rounded-xl border flex justify-between"
-                        >
-                          {item}
-                        </li>
-                    ))}
-                  </ul>
-              )
-          )}
         </div>
       </div>
   );
 }
+
+/* ===== COMPONENTS (unchanged) ===== */
 
 function SavedRecipeCard({ recipe, onRemove }) {
   return (
@@ -201,6 +299,7 @@ function SavedRecipeCard({ recipe, onRemove }) {
           <span className="text-sm text-[var(--color-text-muted)]">
             {recipe.cookingTimeMinutes || 0} min
           </span>
+
             {onRemove && (
                 <button
                     onClick={(e) => {
