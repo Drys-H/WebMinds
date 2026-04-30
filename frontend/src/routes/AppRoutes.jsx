@@ -29,6 +29,8 @@ export default function AppRoutes() {
         {/* CREATE */}
         <Route path="create" element={<CreateRecipe />} />
 
+        <Route path="edit/:id" element={<CreateRecipe />} />
+
         {/* OTHER */}
         <Route path="categories" element={<Categories />} />
         <Route path="community" element={<Community />} />

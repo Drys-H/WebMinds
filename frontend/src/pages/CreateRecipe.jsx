@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { createRecipe, getRecipeById } from "../services/recipeService";
-
+import { useNavigate, useParams } from "react-router-dom";
+import { createRecipe, getRecipeById, updateRecipe } from "../services/recipeService";
 
 const dietaryOptions = [
   "Vegan",
@@ -17,10 +16,8 @@ const dietaryOptions = [
 
 export default function CreateRecipe() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const recipeId = searchParams.get("id");
-  const isEditMode = !!recipeId;
+  const { id } = useParams(); // ✅ FIXED
+  const isEditMode = !!id;    // ✅ FIXED
 
   const [form, setForm] = useState({
     title: "",
@@ -42,15 +39,13 @@ export default function CreateRecipe() {
     }
   }, [navigate]);
 
-  // ✅ NEW: LOAD RECIPE FOR EDIT
+  // ✅ LOAD RECIPE FOR EDIT (fixed id usage)
   useEffect(() => {
-    if (!isEditMode) return;
+    if (!id) return;
 
     async function loadRecipe() {
       try {
-        const data = await getRecipeById(recipeId);
-
-        console.log("EDIT DATA:", data); // debug if needed
+        const data = await getRecipeById(id);
 
         setForm({
           title: data.title || "",
@@ -60,18 +55,15 @@ export default function CreateRecipe() {
           imageUrl: data.imageUrl || "",
           cuisineType: data.cuisineType || "",
 
-          // handle array or fallback
           ingredients:
               Array.isArray(data.ingredients) && data.ingredients.length > 0
                   ? data.ingredients
                   : [""],
 
-          // backend sends string → convert to array
           instructions: data.preparationSteps
               ? data.preparationSteps.split("\n")
               : [""],
 
-          // string → array
           dietaryTags: data.dietaryTag
               ? data.dietaryTag.split(", ").filter(Boolean)
               : [],
@@ -82,7 +74,7 @@ export default function CreateRecipe() {
     }
 
     loadRecipe();
-  }, [recipeId, isEditMode]);
+  }, [id]); // ✅ FIXED
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -142,7 +134,7 @@ export default function CreateRecipe() {
 
     try {
       if (isEditMode) {
-        await updateRecipe(recipeId, recipeData);
+        await updateRecipe(id, recipeData); // ✅ FIXED
         alert("Recipe updated successfully!");
       } else {
         await createRecipe(recipeData);
@@ -166,7 +158,6 @@ export default function CreateRecipe() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* TITLE */}
             <input
                 type="text"
                 name="title"
@@ -177,7 +168,6 @@ export default function CreateRecipe() {
                 required
             />
 
-            {/* DESCRIPTION */}
             <textarea
                 name="description"
                 placeholder="Description"
@@ -188,7 +178,6 @@ export default function CreateRecipe() {
                 required
             />
 
-            {/* TIME + SERVINGS */}
             <div className="grid grid-cols-2 gap-4">
               <input
                   type="number"
@@ -229,7 +218,7 @@ export default function CreateRecipe() {
                         }
                         className="w-full p-3 border rounded-xl"
                     />
-                    <button onClick={() => removeField("ingredients", index)}>×</button>
+                    <button type="button" onClick={() => removeField("ingredients", index)}>×</button>
                   </div>
               ))}
             </section>
@@ -245,48 +234,36 @@ export default function CreateRecipe() {
 
               {form.instructions.map((step, index) => (
                   <div key={index} className="flex gap-2 mb-2">
-                <textarea
-                    value={step}
-                    onChange={(e) =>
-                        handleListChange("instructions", index, e.target.value)
-                    }
-                    className="w-full p-3 border rounded-xl"
-                />
-                    <button onClick={() => removeField("instructions", index)}>×</button>
+                  <textarea
+                      value={step}
+                      onChange={(e) =>
+                          handleListChange("instructions", index, e.target.value)
+                      }
+                      className="w-full p-3 border rounded-xl"
+                  />
+                    <button type="button" onClick={() => removeField("instructions", index)}>×</button>
                   </div>
               ))}
             </section>
 
             {/* IMAGE */}
-            <div>
-              <label className="block mb-2 text-sm font-semibold">
-                Image URL
-              </label>
+            <input
+                type="url"
+                name="imageUrl"
+                placeholder="https://example.com/image.jpg"
+                value={form.imageUrl}
+                onChange={handleChange}
+                className="w-full p-3 rounded-xl border"
+            />
 
-              <input
-                  type="url"
-                  name="imageUrl"
-                  placeholder="https://example.com/image.jpg"
-                  value={form.imageUrl}
-                  onChange={handleChange}
-                  className="w-full p-3 rounded-xl border"
-              />
-
-              {form.imageUrl && (
-                  <img
-                      src={form.imageUrl}
-                      alt="preview"
-                      className="mt-4 w-full h-60 object-cover rounded-xl"
-                  />
-              )}
-            </div>
-
-            {/* SUBMIT */}
             <button className="w-full bg-[var(--color-primary)] text-white py-3 rounded-xl">
               {isEditMode ? "Update Recipe" : "Create Recipe"}
             </button>
+
           </form>
         </div>
       </div>
   );
 }
+
+

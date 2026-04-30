@@ -136,37 +136,33 @@ export default function RecipeDetails() {
     }
   }
 
-  const handleSubmitReview = async (e) => {
-    e.preventDefault();
-
+  async function handleAddToShoppingList() {
     const user = requireLogin();
     if (!user) return;
 
-    if (!rating || !comment.trim()) {
-      alert("Please add a rating and comment.");
-      return;
-    }
-
     try {
-      await addRecipeRating(id, user.username, rating);
+      const res = await fetch(
+          `http://localhost:8080/api/users/${user.username}/shopping-lists/recipe/${id}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+      );
 
-      const newComment = await addComment(id, {
-        text: comment,
-        rating,
-        authorUsername: user.username,
-      });
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Shopping list error:", text);
+        throw new Error();
+      }
 
-      const updatedRating = await getAverageRecipeRating(id);
-
-      setComments((prev) => [newComment, ...prev]);
-      setAverageRating(updatedRating);
-      setRating(0);
-      setComment("");
+      alert("Ingredients added to shopping list!");
     } catch (error) {
       console.error(error);
-      alert("Could not submit review.");
+      alert("Could not add to shopping list.");
     }
-  };
+  }
 
   const title = recipe?.title || "Recipe title";
   const imageUrl =
