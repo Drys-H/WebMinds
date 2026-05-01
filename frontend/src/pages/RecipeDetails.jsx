@@ -145,10 +145,14 @@ export default function RecipeDetails() {
     }
 
     try {
-      await addRecipeRating(user.username, id, rating);
+      await addRecipeRating(id, user.username, rating);
 
       if (comment.trim()) {
-        await addComment(user.username, id, comment.trim());
+        await addComment(id, {
+          text: comment.trim(),
+          authorUsername: user.username,
+          rating: rating,
+        });
       }
 
       const updatedComments = await getCommentsForRecipe(id);
