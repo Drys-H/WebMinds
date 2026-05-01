@@ -57,137 +57,55 @@ export default function SignIn() {
   };
 
   return (
-      <div>
+      <div className="page-shell min-h-screen flex items-center justify-center p-5">
+        <div className="surface-card w-[400px] p-10 rounded-2xl shadow-lg text-center">
 
-        <div style={container}>
-          <div style={card}>
+          <h2 className="text-2xl font-semibold mb-2">Welcome Back</h2>
 
-            <h2 style={title}>Welcome Back</h2>
+          <p className="text-muted mb-5">
+            Sign in to your Fit & Fresh account
+          </p>
 
-            <p style={subtitle}>
-              Sign in to your Fit & Fresh account
-            </p>
+          {error && <p className="text-red-500 mb-3">{error}</p>}
 
-            {error && <p style={errorText}>{error}</p>}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-            <form onSubmit={handleSubmit} style={formStyle}>
+            <input
+                name="username"
+                placeholder="Email address"
+                value={form.username}
+                onChange={handleChange}
+                className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)]"
+            />
 
-              <input
-                  name="username"
-                  placeholder="Email address"
-                  value={form.username}
-                  onChange={handleChange}
-                  style={input}
-              />
+            <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)]"
+            />
 
-              <input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  value={form.password}
-                  onChange={handleChange}
-                  style={input}
-              />
+            <button
+                disabled={loading}
+                className="mt-2 p-3 rounded-lg bg-[var(--color-accent)] text-white font-semibold"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
 
-              <button style={signInBtn} disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
-              </button>
+          </form>
 
-            </form>
+          <p className="mt-5 text-sm">
+            Don't have an account?{" "}
+            <span
+                onClick={() => navigate("/register")}
+                className="text-[var(--color-primary)] font-semibold cursor-pointer"
+            >
+          Create one
+        </span>
+          </p>
 
-            <p style={bottomText}>
-              Don't have an account?{" "}
-              <span onClick={() => navigate("/register")} style={link}>
-              Create one
-            </span>
-            </p>
-
-          </div>
         </div>
       </div>
-  );
-}
-
-/* ================= STYLES ================= */
-
-const container = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minHeight: "100vh",
-  padding: "20px"
-};
-
-const card = {
-  width: "400px",
-  padding: "40px",
-  borderRadius: "20px",
-  background: "var(--surface)",
-  textAlign: "center",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.08)"
-};
-
-const title = {
-  marginBottom: "10px"
-};
-
-const subtitle = {
-  color: "var(--text-light)",
-  marginBottom: "20px"
-};
-
-const formStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "15px"
-};
-
-const signInBtn = {
-  background: "#e07a4f",
-  color: "white",
-  marginTop: "10px",
-  padding: "12px",
-  borderRadius: "10px",
-  border: "none",
-  cursor: "pointer",
-  fontWeight: "600"
-};
-
-const errorText = {
-  color: "#e76f51",
-  marginBottom: "10px"
-};
-
-const bottomText = {
-  marginTop: "20px",
-  fontSize: "14px"
-};
-
-const link = {
-  color: "#6f8f6b",
-  cursor: "pointer",
-  fontWeight: "600"
-};
-
-const toggleWrap = {
-  display: "flex",
-  justifyContent: "flex-end",
-  padding: "20px 60px"
-};
-
-const toggleBtn = {
-  background: "var(--surface)",
-  border: "1px solid var(--border)"
-};
-
-const input = {
-  padding: "12px",
-  borderRadius: "10px",
-  border: "1px solid var(--border)",
-  background: "var(--surface)",
-  color: "var(--text)",
-  outline: "none"
-};
-
-
-
+  ); }

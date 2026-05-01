@@ -170,7 +170,9 @@ const rightSide = {
   padding: "60px",
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center"
+  justifyContent: "center",
+  background: "var(--color-background)",
+  color: "var(--color-text)"
 };
 
 const formStyle = {
@@ -183,15 +185,17 @@ const formStyle = {
 const input = {
   padding: "12px",
   borderRadius: "8px",
-  border: "1px solid #ddd",
-  width: "100%"
+  border: "1px solid var(--color-border)",
+  width: "100%",
+  background: "var(--color-surface)",
+  color: "var(--color-text)",
 };
 
 const submitBtn = {
   padding: "12px",
   borderRadius: "8px",
   border: "none",
-  background: "#e07a4f",
+  background: "var(--color-accent)",
   color: "white",
   cursor: "pointer"
 };
@@ -207,7 +211,7 @@ const successText = {
 };
 
 const link = {
-  color: "#6f8f6b",
+  color: "var(--color-primary)",
   cursor: "pointer"
 };
 
