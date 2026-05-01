@@ -14,6 +14,20 @@ const dietaryOptions = [
   "Paleo",
 ];
 
+const cuisineOptions = [
+  "Italian",
+  "Indian",
+  "Chinese",
+  "Japanese",
+  "Mexican",
+  "Middle Eastern",
+  "British",
+  "American",
+  "French",
+  "Thai",
+  "Other",
+];
+
 export default function CreateRecipe() {
   const navigate = useNavigate();
   const { id } = useParams(); // ✅ FIXED
@@ -49,7 +63,6 @@ export default function CreateRecipe() {
 
         setForm({
           title: data.title || "",
-          description: data.description || "",
           cookingTimeMinutes: data.cookingTimeMinutes || "",
           servings: data.servings || "",
           imageUrl: data.imageUrl || "",
@@ -168,16 +181,6 @@ export default function CreateRecipe() {
                 required
             />
 
-            <textarea
-                name="description"
-                placeholder="Description"
-                value={form.description}
-                onChange={handleChange}
-                className="w-full p-3 rounded-xl border"
-                rows={4}
-                required
-            />
-
             <div className="grid grid-cols-2 gap-4">
               <input
                   type="number"
@@ -199,6 +202,46 @@ export default function CreateRecipe() {
                   required
               />
             </div>
+
+            <section>
+              <h2 className="font-bold mb-3">Cuisine</h2>
+
+              <select
+                  name="cuisineType"
+                  value={form.cuisineType}
+                  onChange={handleChange}
+                  className="w-full p-3 rounded-xl border"
+                  required
+              >
+                <option value="">Select cuisine</option>
+                {cuisineOptions.map((cuisine) => (
+                    <option key={cuisine} value={cuisine}>
+                      {cuisine}
+                    </option>
+                ))}
+              </select>
+            </section>
+
+            <section>
+              <h2 className="font-bold mb-3">Dietary Tags</h2>
+
+              <div className="flex flex-wrap gap-2">
+                {dietaryOptions.map((tag) => (
+                    <button
+                        key={tag}
+                        type="button"
+                        onClick={() => toggleDietaryTag(tag)}
+                        className={`rounded-full border px-4 py-2 text-sm font-semibold ${
+                            form.dietaryTags.includes(tag)
+                                ? "bg-[var(--color-primary)] text-white"
+                                : "bg-white text-[var(--color-text)]"
+                        }`}
+                    >
+                      {tag}
+                    </button>
+                ))}
+              </div>
+            </section>
 
             {/* INGREDIENTS */}
             <section>

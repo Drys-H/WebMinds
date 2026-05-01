@@ -27,7 +27,6 @@ export default function Home() {
         setRecipes(Array.isArray(data) ? data : []);
         setError("");
       } catch (err) {
-        setError("Recipes are unavailable right now.");
         setRecipes([]);
       } finally {
         setLoading(false);
