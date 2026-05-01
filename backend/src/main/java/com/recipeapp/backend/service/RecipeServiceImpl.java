@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,23 +75,22 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setDietaryTag(recipeDTO.getDietaryTag());
         recipe.setAuthor(author);
 
-        List<Ingredient> recipeIngredients = new ArrayList<>();
+        List<Ingredient> updatedIngredients = new ArrayList<>();
 
-        if (recipeDTO.getIngredients() != null) {
+        for (String ingredient : recipeDTO.getIngredients()) {
 
-            for (String ingredient : recipeDTO.getIngredients()) {
-                List<Ingredient> existingIngredients =
-                        ingredientRepository.findByNameIgnoreCase(ingredient);
-                if (existingIngredients.isEmpty()) {
-                    Ingredient newIngredient = new Ingredient();
-                    newIngredient.setName(ingredient);
-                    recipeIngredients.add(newIngredient);
-                } else {
-                    recipeIngredients.add(existingIngredients.get(0));
-                }
+            Optional<Ingredient> existing =
+                    ingredientRepository.findByName(ingredient);
+
+            if (existing.isPresent()) {
+                updatedIngredients.add(existing.get());
+            } else {
+                Ingredient newIngredient = new Ingredient();
+                newIngredient.setName(ingredient);
+                updatedIngredients.add(ingredientRepository.save(newIngredient));
             }
         }
-        recipe.setIngredients(recipeIngredients);
+        recipe.setIngredients(updatedIngredients);
 
         Recipe savedRecipe = recipeRepository.save(recipe);
         return mapToDTO(savedRecipe);
@@ -180,6 +180,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public void updateRecipe(Long id, RecipeDTO recipeDTO, String username) {
+
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Recipe not found"));
 
@@ -187,6 +188,7 @@ public class RecipeServiceImpl implements RecipeService {
             throw new RuntimeException("Only the creator is allowed to make any changes to this recipe!");
         }
 
+        // ✅ Update fields
         recipe.setTitle(recipeDTO.getTitle());
         recipe.setPreparationSteps(recipeDTO.getPreparationSteps());
         recipe.setCookingTimeMinutes(recipeDTO.getCookingTimeMinutes());
@@ -195,17 +197,31 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setCuisineType(recipeDTO.getCuisineType());
         recipe.setDietaryTag(recipeDTO.getDietaryTag());
 
+        // ✅ FIX ingredient handling
         if (recipeDTO.getIngredients() != null) {
-            recipe.getIngredients().clear(); // Wipe the old ingredients
+
+            List<Ingredient> updatedIngredients = new ArrayList<>();
 
             for (String ingredientName : recipeDTO.getIngredients()) {
-                Ingredient newIngredient = new Ingredient();
-                newIngredient.setName(ingredientName);
-                recipe.getIngredients().add(newIngredient);
+
+                Ingredient ingredient = ingredientRepository
+                        .findByName(ingredientName)
+                        .orElseGet(() -> {
+                            Ingredient newIngredient = new Ingredient();
+                            newIngredient.setName(ingredientName);
+                            return ingredientRepository.save(newIngredient);
+                        });
+
+                updatedIngredients.add(ingredient);
             }
+
+            recipe.setIngredients(updatedIngredients);
         }
+
         recipeRepository.save(recipe);
     }
+
+
 
     @Override
     public void deleteRecipe(Long id, String username) {

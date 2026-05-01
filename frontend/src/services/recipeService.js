@@ -251,8 +251,9 @@ export async function updateRecipe(id, recipeData) {
   });
 
   if (!response.ok) {
+    console.error("Backend error:", text);
     throw new Error("Failed to update recipe");
   }
 
-  return await response.json();
+  return await response.text();
 }
